@@ -35,23 +35,27 @@ plugins=(git brew svn osx pip fabric)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
-if [[ "$(uname)" -eq "Darwin" ]]; then
- # On Mac
+case `uname` in
+    Darwin)
 	export PATH=/Users/luberg/Library/Python/2.7/bin:/Users/luberg/Library/Python/2.7/lib/python/site-packages:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/sbin
-elif [[ "$(uname)" -eq "Linux" ]]; then
+        ;;
+    Linux)
 	export PATH=/home/luberg/.local/bin:/home/luberg/.local/lib/python2.7/site-packages/powerline:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/sbin
-fi
+        ;;
+esac
 export GREP_OPTIONS="--exclude=\*.svn\*"
 sublime(){ subl `find . -iname "$1"`; }
 fvim(){ vim `find . -iname "$1"`; }
 svnvimlog(){ svn log -v "$1" | vim -; }
 # find file with same name in 2 different directories and compare
-if [[ "$(uname)" -eq "Darwin" ]]; then
- # On Mac
+case `uname` in
+    Darwin)
 	dcmdiff(){ vimdiff `find "$1" -iname "$3"` `find "$2" -iname "$3"`; }
-elif [[ "$(uname)" -eq "Linux" ]]; then
+        ;;
+    Linux)
 	dcmdiff(){ meld `find "$1" -iname "$3"` `find "$2" -iname "$3"`; }
-fi
+        ;;
+esac
 
 # full context diff
 fulldiff() {
@@ -63,12 +67,15 @@ svn diff --old=$1@$2 --new=$1@$3 --diff-cmd /usr/bin/diff -x "-U 10000" > $4
 }
 alias ..='cd ..'
 alias .='pwd'
-if [[ "$(uname)" -eq "Darwin" ]]; then
- # On Mac
-	alias c='~/Code'
-elif [[ "$(uname)" -eq "Linux" ]]; then
-alias Code='/home/luberg/Desktop/Parallels\ Shared\ Folders/Home/Code'
-fi
+
+case `uname` in
+    Darwin)
+        alias Code='~/Code'
+        ;;
+    Linux)
+        alias Code='/home/luberg/Desktop/Parallels\ Shared\ Folders/Home/Code'
+        ;;
+esac
 
 export TERM=xterm-256color
 tmux attach -t base || tmux new -s base
