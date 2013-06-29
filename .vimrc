@@ -48,7 +48,11 @@ set backupdir=$HOME/.vim/backup
 set directory=$HOME/.vim/temp
 set encoding=utf-8
 
-set rtp+=$HOME/.local/lib/python2.7/site-packages/powerline/bindings/vim
+if has("mac")
+    set rtp+=$HOME/Library/Python/2.7/lib/python/site-packages/powerline/bindings/vim
+elseif has("unix")
+    set rtp+=$HOME/.local/lib/python2.7/site-packages/powerline/bindings/vim
+endif
 " VIM settings
 syntax on
 set t_Co=256
