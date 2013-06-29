@@ -48,7 +48,7 @@ set backupdir=$HOME/.vim/backup
 set directory=$HOME/.vim/temp
 set encoding=utf-8
 
-set rtp+=~/Code/powerline/powerline/bindings/vim
+set rtp+=$HOME/.local/lib/python2.7/site-packages/powerline/bindings/vim
 " VIM settings
 syntax on
 set t_Co=256
@@ -87,13 +87,10 @@ set wildmenu
 set wildcharm=<TAB>
 set wildignore=*.pyc
 set laststatus=2
-set ambiwidth=double
 " Powerline configuration
 let g:powerline_symbols = 'fancy'
 let g:Powerline_colorscheme='solarized256'
 set noshowmode
-
-
 set foldmethod=indent
 set foldnestmax=10
 set nofoldenable

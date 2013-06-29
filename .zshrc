@@ -37,16 +37,16 @@ source $ZSH/oh-my-zsh.sh
 # Customize to your needs...
 case `uname` in
     Darwin)
-	export PATH=/Users/luberg/Library/Python/2.7/bin:/Users/luberg/Library/Python/2.7/lib/python/site-packages:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/sbin
+	export PATH=$HOME/Library/Python/2.7/bin:$HOME/Library/Python/2.7/lib/python/site-packages:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/sbin
         ;;
     Linux)
-	export PATH=/home/luberg/.local/bin:/home/luberg/.local/lib/python2.7/site-packages/powerline:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/sbin
+	export PATH=$HOME/.local/bin:$HOME/.local/lib/python2.7/site-packages/powerline:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/sbin
         ;;
 esac
 export GREP_OPTIONS="--exclude=\*.svn\*"
 sublime(){ subl `find . -iname "$1"`; }
 fvim(){ vim `find . -iname "$1"`; }
-svnvimlog(){ svn log -v "$1" | vim -; }
+svnvimlog(){ svn log -v --stop-on-copy "$1" | vim -; }
 # find file with same name in 2 different directories and compare
 case `uname` in
     Darwin)
@@ -73,7 +73,7 @@ case `uname` in
         alias Code='~/Code'
         ;;
     Linux)
-        alias Code='/home/luberg/Desktop/Parallels\ Shared\ Folders/Home/Code'
+        alias Code='$HOME/Desktop/Parallels\ Shared\ Folders/Home/Code'
         ;;
 esac
 
