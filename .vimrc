@@ -137,7 +137,7 @@ endfunction
 
 
 " For Mac clipboard support
-" set clipboard=unnamed
+set clipboard=unnamed
 
 nmap <C-n> :bn<cr>
 nmap <C-p> :bp<cr>
