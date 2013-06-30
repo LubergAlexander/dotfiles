@@ -137,7 +137,12 @@ endfunction
 
 
 " For Mac clipboard support
-set clipboard=unnamed
+
+if has("mac")
+    set clipboard=unnamed
+elseif has("unix")
+    set clipboard=unnamedplus
+endif
 
 nmap <C-n> :bn<cr>
 nmap <C-p> :bp<cr>
