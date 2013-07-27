@@ -5,6 +5,6 @@ case `uname` in
         reattach-to-user-namespace pbcopy
         ;;
     Linux)
-        xclip
+        xsel -ib 
         ;;
 esac
