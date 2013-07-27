@@ -76,6 +76,6 @@ case `uname` in
         alias Code='$HOME/Desktop/Parallels\ Shared\ Folders/Home/Code'
         ;;
 esac
-
 export TERM=xterm-256color
-tmux attach -t base || tmux new -s base
+tmux attach-session -t base || tmux new-session -s base
+
