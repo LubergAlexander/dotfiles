@@ -154,3 +154,10 @@ let g:ctrlp_working_path_mode = 'ra'
 nnoremap <C-t> :Switch<cr>
 inoremap <C-t> <ESC>:Switch<CR>gi
 
+" make Esc happen without waiting for timeoutlen
+" fixes Powerline delay
+augroup FastEscape
+  autocmd!
+  au InsertEnter * set timeoutlen=0
+  au InsertLeave * set timeoutlen=1000
+augroup END
