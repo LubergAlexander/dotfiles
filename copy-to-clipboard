@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+case `uname` in
+    Darwin)
+        reattach-to-user-namespace pbcopy
+        ;;
+    Linux)
+        xclip
+        ;;
+esac
