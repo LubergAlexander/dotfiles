@@ -3,40 +3,40 @@ filetype off
 filetype plugin indent on
 
 " Setting up Vundle - the vim plugin bundler
-    let iCanHazVundle=1
-    let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
-    if !filereadable(vundle_readme)
-        echo "Installing Vundle.."
-        echo ""
-        silent !mkdir -p ~/.vim/bundle
-        silent !git clone https://github.com/gmarik/vundle ~/.vim/bundle/vundle
-        let iCanHazVundle=0
-    endif
-    set rtp+=~/.vim/bundle/vundle/
-    call vundle#rc()
-    Bundle 'gmarik/vundle'
-    "Add your bundles here
-    Bundle 'kien/ctrlp.vim'
-    Bundle 'tpope/vim-fugitive'
-    Bundle 'scrooloose/nerdtree'
-    Bundle 'scrooloose/nerdcommenter'
-    Bundle 'klen/python-mode'
-    Bundle 'altercation/vim-colors-solarized'
-    Bundle 'sickill/vim-monokai'
-    Bundle 'mileszs/ack.vim'
-    Bundle 'msanders/snipmate.vim'
-    Bundle 'vim-python-virtualenv'
-    Bundle 'vim-django-support'
-    Bundle 'fholgado/minibufexpl.vim'
-    Bundle 'vim-scripts/DirDiff.vim'
-    Bundle 'AndrewRadev/switch.vim'
-    "Bundle 'Lokaltog/powerline' " Powerline for everything in python
-    "   "...All your other bundles...
-    if iCanHazVundle == 0
-        echo "Installing Bundles, please ignore key map error messages"
-        echo ""
-        :BundleInstall
-    endif
+let iCanHazVundle=1
+let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
+if !filereadable(vundle_readme)
+    echo "Installing Vundle.."
+    echo ""
+    silent !mkdir -p ~/.vim/bundle
+    silent !git clone https://github.com/gmarik/vundle ~/.vim/bundle/vundle
+    let iCanHazVundle=0
+endif
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'gmarik/vundle'
+"Add your bundles here
+Bundle 'kien/ctrlp.vim'
+Bundle 'tpope/vim-fugitive'
+Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'klen/python-mode'
+Bundle 'altercation/vim-colors-solarized'
+Bundle 'sickill/vim-monokai'
+Bundle 'mileszs/ack.vim'
+Bundle 'msanders/snipmate.vim'
+Bundle 'vim-python-virtualenv'
+Bundle 'vim-django-support'
+Bundle 'fholgado/minibufexpl.vim'
+Bundle 'vim-scripts/DirDiff.vim'
+Bundle 'AndrewRadev/switch.vim'
+"Bundle 'Lokaltog/powerline' " Powerline for everything in python
+"   "...All your other bundles...
+if iCanHazVundle == 0
+    echo "Installing Bundles, please ignore key map error messages"
+    echo ""
+    :BundleInstall
+endif
 " Setting up Vundle - the vim plugin bundler end
 
 
@@ -69,7 +69,7 @@ set visualbell
 set linebreak
 set showcmd
 set whichwrap=b,s,<,>,[,],l,h
-set completeopt=menu,preview
+set completeopt=menuone,longest,preview
 set infercase
 set cmdheight=1
 set autoindent
@@ -110,7 +110,11 @@ autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 
 " Rope settings
-let g:pymode_rope_guess_project = 0
+let ropevim_vim_completion = 1
+let ropevim_extended_complete = 1
+"imap <c-space> <C-R>=RopeCodeAssistInsertMode()<CR>
+"let g:pymode_rope_guess_project = 0
+let g:pymode_rope = 1
 "fix autoident after pasting
 inoremap <silent> <C-u> <ESC>u:set paste<CR>.:set nopaste<CR>gi
 
@@ -146,9 +150,11 @@ endif
 
 nmap <C-n> :bn<cr>
 nmap <C-p> :bp<cr>
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_working_path_mode = 'ra'
+" CtrlP
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/* 
+"let g:ctrlp_map = '<c-p>'
+"let g:ctrlp_cmd = 'CtrlPMixed'
+"let g:ctrlp_working_path_mode = 'ra'
 
 " For switch.vim hotkey for toggle boolean options
 nnoremap <C-t> :Switch<cr>
@@ -157,7 +163,7 @@ inoremap <C-t> <ESC>:Switch<CR>gi
 " make Esc happen without waiting for timeoutlen
 " fixes Powerline delay
 augroup FastEscape
-  autocmd!
-  au InsertEnter * set timeoutlen=0
-  au InsertLeave * set timeoutlen=1000
+    autocmd!
+    au InsertEnter * set timeoutlen=0
+    au InsertLeave * set timeoutlen=1000
 augroup END
