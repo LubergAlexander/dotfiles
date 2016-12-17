@@ -1,7 +1,7 @@
 set nocompatible
 
 " load vim-plug
-source ~/.vim.plug
+source ~/.plugins.vim
 
 silent !mkdir -p ~/.vim/backup
 silent !mkdir -p ~/.vim/temp
@@ -32,7 +32,6 @@ highlight SpecialKey ctermfg=Black
 
 " Filetype settings
 augroup filetypedetect
-  au! BufNewFile,BufRead *.plug, set filetype=vim
   au! BufRead,BufNewFile *.m, set filetype=matlab
 augroup END
 
