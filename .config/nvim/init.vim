@@ -53,7 +53,7 @@ call dein#add('tpope/vim-commentary')
 if has('mac')
   " show documentation in the Dash.app
   " Dash.app is a mac only application
-  call dein#add('rizzatti/dash.vim', { 'on_ft': ['javascript', 'jsx', 'python'] }) "{{{
+  call dein#add('rizzatti/dash.vim', { 'on_ft': ['vim', 'javascript', 'jsx', 'python'] }) "{{{
     nmap <silent> <leader>d <Plug>DashSearch
   "}}}
 
@@ -241,12 +241,12 @@ call dein#end()
 
 " == General VIM settings ==
 
+filetype plugin indent on
+
 " Truecolors
 if has('nvim')
   set termguicolors
 endif
-
-filetype plugin indent on
 
 silent execute '!mkdir -p '.s:nvim_home_dir.'/backup'
 silent execute '!mkdir -p '.s:nvim_home_dir.'/temp'
@@ -267,21 +267,66 @@ set fillchars=vert:\ ,fold:\ "
 
 " show relative numbers for easier navigation
 set relativenumber
+
+" gray line numbers
 highlight LineNr ctermfg=gray
 
 " invisible character colors
 highlight NonText ctermfg=Black
 highlight SpecialKey ctermfg=Black
 
-" highlight currentl line
+" highlight current line
 set cursorline
 
 " hide end of buffer ~ signs
 highlight EndOfBuffer ctermbg=bg ctermfg=bg guibg=bg guifg=bg
 
+" auto indentation mode
+set autoindent
+
+" backspacing over indentation, end-of-line
+set bs=2
+
+" no fucking tabs, 2 spaces preferred to tabs
+set expandtab tabstop=2
+
+" make searches case-ins (unless upper-case letters)
+set ignorecase smartcase
+
+" show the `best match so far' while typing search
+set incsearch
+
+" stay in the same column while jumping
+set nostartofline
+
+" don't bell or blink
+set vb t_vb=
+
+" place a split on the right from the current window
+set splitright
+
+map vv :vsplit<CR>
+map ss :split<CR>
+
+nmap <tab><tab> <C-w>w
+
+" use space to jump by pages
+nnoremap <Space> <PageDown>
+
+" clear search highlighting
+nnoremap S :noh<CR>
+
+" force saving files that require root permission
+cmap w!! %!sudo tee > /dev/null %
+
+" remap leader to minus
+let mapleader = "-"
+
+
 " toggle background light/dark
 map <Leader>bg :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 
+" autofix javascript with eslint(d)
 function! AutoFormatJavaScript()
   " Save cursor position, fix with eslint and restore cursor position
   let l:line_number=line('.')
@@ -291,4 +336,13 @@ function! AutoFormatJavaScript()
   call cursor(l:line_number, l:column_number)
 endfunction
 
-autocmd BufWritePre *.js,*.jsx :call AutoFormatJavaScript()
+autocmd FileType javascript map <silent> <leader>l :call AutoFormatJavaScript()<CR>
+
+" automatically trim all the trailing whitespace on save
+function! TrimWhitespace()
+  let l:save = winsaveview()
+  %s/\s\+$//e
+  call winrestview(l:save)
+endfunction
+
+autocmd BufWritePre * :call TrimWhitespace()
