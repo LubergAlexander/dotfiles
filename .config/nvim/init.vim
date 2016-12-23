@@ -121,6 +121,7 @@ call dein#add('tpope/vim-sleuth')
 
 " Asynchronous formatter
 " own fork before my pull request is accepted
+" yapf requires a config file which can be in homedir or project dir
 call dein#add('LubergAlexander/neoformat', { 'on_ft': ['javascript', 'python', 'css'], 'rev': 'fix-job-control', 'build': 'npm install -g eslint_d stylefmt' }) "{{{
     let g:neoformat_javascript_eslintd = {
     \ 'exe': 'eslint_d',
@@ -137,9 +138,11 @@ call dein#add('LubergAlexander/neoformat', { 'on_ft': ['javascript', 'python', '
 "}}}
 
 " Asynchronous linter
-call dein#add('w0rp/ale') "{{{
+" Add .stylelintrc to homedir or project
+call dein#add('w0rp/ale', { 'build': 'npm install -g eslint stylelint-config-css-modules stylelint-config-standard'}) "{{{
   let g:ale_linters={
   \ 'javascript': ['eslint'],
+  \ 'css': ['stylelint']
   \ }
 
   let g:ale_sign_column_always=1
