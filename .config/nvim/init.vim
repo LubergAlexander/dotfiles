@@ -2,6 +2,8 @@ let s:nvim_home_dir=expand("$HOME/.config/nvim")
 let g:python_host_prog='/usr/local/bin/python2'
 let g:python3_host_prog='/usr/local/bin/python3'
 
+let mapleader=','
+
 " Setup dein  ---------------------------------------------------------------{{{
 if (!isdirectory(expand('$HOME/.config/nvim/repos/github.com/Shougo/dein.vim')))
   call system(expand('mkdir -p '.s:nvim_home_dir. '/repos/github.com'))
@@ -117,6 +119,19 @@ call dein#add('ryanoasis/vim-devicons')
 " Automatic indenting style
 call dein#add('tpope/vim-sleuth')
 
+" Asynchronous formatter
+" own fork before my pull request is accepted
+call dein#add('LubergAlexander/neoformat', { 'on_ft': ['javascript', 'python', 'css'], 'rev': 'fix-job-control', 'build': 'npm install -g eslint_d' }) "{{{
+    let g:neoformat_javascript_eslintd = {
+    \ 'exe': 'eslint_d',
+    \ 'args': ['--fix-to-stdout', '--stdin < %']
+    \ }
+    let g:neoformat_read_from_buffer = 0
+    let g:neoformat_enabled_javascript=['eslintd']
+    let g:neoformat_enabled_python=['yapf']
+    autocmd FileType javascript,python map <silent> <leader>l :Neoformat<CR>
+"}}}
+
 " Asynchronous linter
 call dein#add('w0rp/ale') "{{{
   let g:ale_linters={
@@ -134,7 +149,7 @@ call dein#add('w0rp/ale') "{{{
 
 " == Python plugins ==
 " deoplete-jedi integration for python autocomplete
-call dein#add('zchee/deoplete-jedi', { 'on_ft': ['python', 'python3'], 'depends': ['deoplete.nvim'] }) "{{{
+call dein#add('zchee/deoplete-jedi', { 'on_ft': 'python', 'depends': ['deoplete.nvim'] }) "{{{
   let g:deoplete#sources#jedi#worker_threads=2
   let g:deoplete#sources['python']=['ultisnips', 'jedi']
 "}}}
@@ -314,29 +329,14 @@ nmap <tab><tab> <C-w>w
 nnoremap <Space> <PageDown>
 
 " clear search highlighting
-nnoremap S :noh<CR>
+nnoremap S :nohlsearch<CR>
 
 " force saving files that require root permission
 cmap w!! %!sudo tee > /dev/null %
 
-" remap leader to minus
-let mapleader = "-"
-
-
 " toggle background light/dark
 map <Leader>bg :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 
-" autofix javascript with eslint(d)
-function! AutoFormatJavaScript()
-  " Save cursor position, fix with eslint and restore cursor position
-  let l:line_number=line('.')
-  let l:column_number=col('.')
-  let l:eslint_path='eslint_d'
-  silent execute '%!' . l:eslint_path . ' --fix-to-stdout --stdin < %'
-  call cursor(l:line_number, l:column_number)
-endfunction
-
-autocmd FileType javascript map <silent> <leader>l :call AutoFormatJavaScript()<CR>
 
 " automatically trim all the trailing whitespace on save
 function! TrimWhitespace()
