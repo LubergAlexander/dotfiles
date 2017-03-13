@@ -12,7 +12,6 @@ export SHELL="$BREW_PREFIX/bin/zsh"
 export EDITOR="$BREW_PREFIX/bin/nvim"
 export GIT_EDITOR="$EDITOR"
 export FONTCONFIG_PATH="/opt/X11/lib/X11/fontconfig"
-export HOMEBREW_GITHUB_API_TOKEN="b69e3e9ddcd214952432ee6f20c71c389cbaad69"
 export GOPATH="$BREW_PREFIX/gobin"
 export TERM=screen-256color
 export VIRTUALENVWRAPPER_PYTHON="$BREW_PREFIX/bin/python3"
