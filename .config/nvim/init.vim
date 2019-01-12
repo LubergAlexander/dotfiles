@@ -141,8 +141,6 @@ function s:deoplete_plugin_config()
   let g:deoplete#auto_refresh_delay=0
   let g:deoplete#auto_complete_delay=0
 
-  call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
-
   inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
   inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
@@ -327,7 +325,6 @@ function s:vim_airline_config()
   let g:airline_powerline_fonts=1
   let g:airline#extensions#tabline#enabled=1
   let g:airline#extensions#tabline#fnamemod = ':t' " Show only filename in a tab
-  let g:airline_section_error='%{ALEGetStatusLine()}'
   let g:airline_theme='gruvbox'
 endfunction
 
@@ -338,7 +335,8 @@ call dein#add('ryanoasis/vim-devicons')
 
 " Asynchronous formatter
 " INSTALL: npm install -g eslint_d stylefmt js-beautify
-" yapf requires a config file which can be in homedir or project dir
+" pip3 install black
+" pip install isort
 function s:neoformat_config()
     " Override jsbeautify definition to supply args
     let g:neoformat_json_jsbeautify = {
@@ -362,10 +360,13 @@ function s:neoformat_config()
     " read from file instead of buffer, otherwise some formatters fail to
     " resolve the config file which can be located in parent directories
     let g:neoformat_enabled_javascript=['eslintd']
-    let g:neoformat_enabled_python=['yapf']
+    let g:neoformat_enabled_python=['isort', 'black']
     let g:neoformat_enabled_json=['jsbeautify']
     let g:neoformat_enabled_html=['htmlbeautify']
     let g:neoformat_enabled_css=['stylefmt']
+
+    let g:neoformat_run_all_formatters = 1
+
 
     augroup neoformatGrp
       autocmd!
@@ -419,7 +420,7 @@ call dein#add('zchee/deoplete-jedi', { 'on_ft': 'python', 'depends': ['deoplete.
 
 " jedi-vim refactoring/goto functionality
 function s:jedi_vim_config()
-  let g:jedi#completions_enabled = 0
+  let g:jedi#completions_enabled = 1
   let g:goto_assignments_command = '<leader>g'
   let g:jedi#documentation_command = 'K'
   let g:jedi#usages_command = '<leader>us'
@@ -564,17 +565,14 @@ highlight SpecialKey ctermfg=Black
 " no folding by default
 set nofoldenable
 
-" no highlighting after 120 char
-set synmaxcol=120
-
 " auto indentation mode
 set autoindent
 
 " backspacing over indentation, end-of-line
 set backspace=2
 
-" no fucking tabs, 2 spaces preferred to tabs
-set expandtab tabstop=2
+" no fucking tabs, 4 spaces preferred to tabs
+set expandtab tabstop=4
 
 " make searches case-ins (unless upper-case letters)
 set ignorecase smartcase
