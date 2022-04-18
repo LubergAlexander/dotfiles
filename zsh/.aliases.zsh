@@ -9,3 +9,16 @@ alias mux='tmuxinator'
 alias inops='mux start inops'
 alias pivo='mux start pivo'
 alias pip-upgrade="pip list --outdated | sed 's/(.*//g' | xargs -n1 pip install -U"
+
+update_neovim_venvs () {
+  rm -rf "~/.virtualenvs/neovim*";
+
+  python3 -m venv ~/.virtualenvs/neovim3;
+
+  source ~/.virtualenvs/neovim3/bin/activate;
+  pip install --upgrade pip;
+  pip install --upgrade pynvim "python-language-server[all]"
+
+  deactivate;
+}
+

@@ -1,7 +1,6 @@
 scriptencoding utf-8
 
 let s:nvim_home_dir=expand('$HOME/.config/nvim')
-let g:python_host_prog=expand('$HOME/.virtualenvs/neovim2/bin/python')
 let g:python3_host_prog=expand('$HOME/.virtualenvs/neovim3/bin/python')
 
 let g:mapleader=' '
@@ -135,11 +134,9 @@ call dein#add('Shougo/denite.nvim', { 'depends': ['cpsm','neomru.vim'], 'hook_ad
 " faster autocomplete alternative
 function s:deoplete_plugin_config()
   let g:deoplete#enable_at_startup=1
-  let g:deoplete#omni#functions={}
-  let g:deoplete#sources={}
   let g:deoplete#omni_patterns={}
-  let g:deoplete#auto_refresh_delay=0
-  let g:deoplete#auto_complete_delay=0
+  call deoplete#custom#option("auto_complete_delay", 0)
+  call deoplete#custom#option("auto_refresh_delay", 0)
 
   inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -413,10 +410,12 @@ call dein#add('hynek/vim-python-pep8-indent')
 
 " deoplete-jedi integration for python autocomplete
 function s:deoplete_jedi_config()
-  let g:deoplete#sources['python']=['ultisnips', 'jedi']
+  call deoplete#custom#option('sources', {
+    \ 'python': ['ultisnips', 'jedi']
+  \})
 endfunction
 
-call dein#add('zchee/deoplete-jedi', { 'on_ft': 'python', 'depends': ['deoplete.nvim'], 'hook_add': function('s:deoplete_jedi_config') })
+call dein#add('deoplete-plugins/deoplete-jedi', { 'on_ft': 'python', 'depends': ['deoplete.nvim'], 'hook_add': function('s:deoplete_jedi_config') })
 
 " jedi-vim refactoring/goto functionality
 function s:jedi_vim_config()
@@ -453,9 +452,14 @@ call dein#add('ternjs/tern_for_vim', { 'on_ft': ['javascript', 'jsx'], 'hook_add
 function s:deoplete_ternjs_config()
   set completeopt=longest,menuone
 
-  let g:deoplete#sources['javascript.jsx']=['ultisnips', 'ternjs']
-  let g:deoplete#sources['javascript']=['ultisnips', 'ternjs']
-  let g:deoplete#omni#functions.javascript=['tern#Complete']
+  call deoplete#custom#option('sources', {
+    \ 'javascript': ['ultisnips', 'ternjs'],
+    \ 'javascript.jsx': ['ultisnips', 'ternjs']
+  \})
+
+  call deoplete#custom#var('omni', 'functions', {
+    \ 'javascript': ['term#Complete']
+  \})
 
   imap <expr><C-j>   pumvisible() ? "\<C-n>" : "\<C-j>"
   imap <expr><C-k>   pumvisible() ? "\<C-p>" : "\<C-k>"
