@@ -1,13 +1,12 @@
 # Zsh settings
 # Environment
 BREW_PREFIX="$(brew --prefix)"
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="kolo"
 DISABLE_UPDATE_PROMPT="true"
 DISABLE_LS_COLORS="true"
-plugins=(git brew zsh-syntax-highlighting sudo macos)
+plugins=(git brew sudo macos)
 
 export SHELL="$BREW_PREFIX/bin/zsh"
 export EDITOR="$BREW_PREFIX/bin/nvim"
@@ -25,6 +24,7 @@ source "$HOME/.linkedin.environment.zsh"
 source "$HOME/.aliases.zsh"
 source "$ZSH/oh-my-zsh.sh"
 source "$BREW_PREFIX/etc/profile.d/z.sh"
+source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 path=(
   "$HOME/node_tools/node_modules/.bin"      # node/js tooling

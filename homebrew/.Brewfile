@@ -37,3 +37,8 @@ cask 'skype'
 cask 'slack'
 cask 'spotify'
 cask 'karabiner-elements'
+cask 'bartender'
+
+tap 'homebrew/cask-fonts'
+cask 'font-hack-nerd-font'
+
