@@ -1,4 +1,6 @@
 brew 'topgrade'
+brew 'zsh-syntax-highlighting'
+brew 'nvim'
 brew 'stow'
 brew 'coreutils'
 brew 'ctags-exuberant'

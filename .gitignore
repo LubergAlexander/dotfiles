@@ -1,1 +1,4 @@
 homebrew/.Brewfile.lock.json
+nvim/.config/nvim/undo/*
+nvim/.config/nvim/backup/*
+nvim/.config/nvim/repos

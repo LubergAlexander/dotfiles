@@ -1,12 +1,13 @@
 # Zsh settings
+# Environment
+BREW_PREFIX="$(brew --prefix)"
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="kolo"
 DISABLE_UPDATE_PROMPT="true"
 DISABLE_LS_COLORS="true"
-plugins=(git brew zsh-syntax-highlighting sudo osx)
-
-# Environment
-BREW_PREFIX="$(brew --prefix)"
+plugins=(git brew zsh-syntax-highlighting sudo macos)
 
 export SHELL="$BREW_PREFIX/bin/zsh"
 export EDITOR="$BREW_PREFIX/bin/nvim"
@@ -23,10 +24,7 @@ export MPD_HOST="::1"
 source "$HOME/.linkedin.environment.zsh"
 source "$HOME/.aliases.zsh"
 source "$ZSH/oh-my-zsh.sh"
-source "$HOME/.cargo/env"
 source "$BREW_PREFIX/etc/profile.d/z.sh"
-source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
 path=(
   "$HOME/node_tools/node_modules/.bin"      # node/js tooling
