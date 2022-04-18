@@ -1,3 +1,5 @@
+brew 'topgrade'
+brew 'stow'
 brew 'coreutils'
 brew 'ctags-exuberant'
 brew 'curl'
