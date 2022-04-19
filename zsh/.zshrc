@@ -1,6 +1,12 @@
 # Zsh settings
 # Environment
-BREW_PREFIX="$(brew --prefix)"
+unsetopt nomatch
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        BREW_PREFIX="/usr/"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        BREW_PREFIX="$(brew --prefix)"
+fi
 
 ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="kolo"
@@ -20,11 +26,19 @@ export DASHT_DOCSETS_DIR="$HOME/.dasht"
 export MPD_HOST="::1"
 
 # Extra environment/aliases
-source "$HOME/.linkedin.environment.zsh"
 source "$HOME/.aliases.zsh"
 source "$ZSH/oh-my-zsh.sh"
-source "$BREW_PREFIX/etc/profile.d/z.sh"
-source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+        source "$HOME/.linkedin.environment.zsh"
+        source "$BREW_PREFIX/etc/profile.d/z.sh"
+        source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+        workon() {
+          source "$BREW_PREFIX/bin/virtualenvwrapper.sh"
+          workon $@
+        }
+fi
 
 path=(
   "$HOME/node_tools/node_modules/.bin"      # node/js tooling
