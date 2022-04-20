@@ -31,6 +31,7 @@ path=(
   "$BREW_PREFIX/opt/node@6/bin"
   "$BREW_PREFIX/opt/go/libexec/bin"         # go
   "$BREW_PREFIX/opt/gnu-sed/libexec/gnubin" # override system sed with gnu-sed
+  "$HOME/.gem/ruby/2.6.0/bin"               # ruby
   $path
 )
 
@@ -38,3 +39,5 @@ workon() {
   source "$BREW_PREFIX/bin/virtualenvwrapper.sh"
   workon $@
 }
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
