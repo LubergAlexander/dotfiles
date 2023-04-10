@@ -20,15 +20,16 @@ export GIT_EDITOR="$EDITOR"
 export GOPATH="$BREW_PREFIX/gobin"
 
 # Extra environment/aliases
-source "$HOME/.aliases.zsh"
-source "$ZSH/oh-my-zsh.sh"
-
 path=(
   "$BREW_PREFIX/bin"
   "$HOME/node_tools/node_modules/.bin"      # node/js tooling
   "$HOME/.gem/ruby/2.6.0/bin"               # ruby
+  "$HOME/.docker/bin"                       # docker
   "/opt/homebrew/opt/libcouchbase@2/bin"
   $path
 )
+source "$HOME/.aliases.zsh"
+source "$ZSH/oh-my-zsh.sh"
+
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
