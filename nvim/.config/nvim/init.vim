@@ -2,6 +2,9 @@ scriptencoding utf-8
 
 let s:nvim_home_dir=expand('$HOME/.config/nvim')
 let g:python3_host_prog=expand('$HOME/.virtualenvs/neovim3/bin/python')
+let g:loaded_node_provider = 0
+let g:loaded_ruby_provider = 0
+let g:loaded_perl_provider = 0
 
 let g:mapleader=' '
 
@@ -322,6 +325,7 @@ function s:vim_airline_config()
   let g:airline_powerline_fonts=1
   let g:airline#extensions#tabline#enabled=1
   let g:airline#extensions#tabline#fnamemod = ':t' " Show only filename in a tab
+  let g:airline#extensions#disable_rtp_load=1
   let g:airline_theme='gruvbox'
 endfunction
 
