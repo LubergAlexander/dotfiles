@@ -5,3 +5,4 @@ nvim/.config/nvim/repos
 nvim/.config/nvim/.cache
 nvim/.config/nvim/temp
 nvim/.config/nvim/repos
+nvim/.config/nvim/lazy-lock.json
