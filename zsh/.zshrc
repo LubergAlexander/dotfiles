@@ -7,33 +7,7 @@ fi
 export TERM="xterm-256color"
 [ -n "$TMUX" ] && export TERM="tmux-256color"
 
-<<<<<<< HEAD
-# Editor setup
-export EDITOR="nvim"
-export VISUAL="$EDITOR"
-export GIT_EDITOR="$EDITOR"
-<<<<<<< HEAD
-export GOPATH=$HOME/go
-
-# Path setup
-path=("$GOPATH/bin" "$BREW_PREFIX/bin" "$BREW_PREFIX/sbin" $path)
-=======
-
-# Path setup
-path=(
-    "$BREW_PREFIX/bin"
-    "$BREW_PREFIX/sbin"
-    "${KREW_ROOT:-$HOME/.krew}/bin"
-    "/opt/homebrew/Cellar/mysql@8.0/8.0.40/bin"
-    $path
-)
->>>>>>> afced96 (cleanup of zshrc)
-typeset -U path
-
-# Load Zinit
-=======
 # Zinit initialization
->>>>>>> 776c22b (zshrc config)
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -d "$ZINIT_HOME" ]]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
@@ -46,24 +20,10 @@ export EDITOR="nvim"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
 
-<<<<<<< HEAD
-zinit snippet OMZL::git.zsh
-<<<<<<< HEAD
-=======
-zinit snippet OMZL::directories.zsh
->>>>>>> afced96 (cleanup of zshrc)
-zinit snippet OMZL::history.zsh
-zinit snippet OMZL::key-bindings.zsh
-zinit snippet OMZP::git
-zinit snippet OMZP::kubectl
-zinit snippet OMZP::kubectx
-zinit snippet OMZP::kube-ps1
-=======
 # Path configuration - moved after brew to use its paths
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
   export HOMEBREW_PREFIX="/opt/homebrew";
 fi
->>>>>>> 776c22b (zshrc config)
 
 
 path=(
@@ -124,17 +84,11 @@ setopt hist_ignore_all_dups hist_find_no_dups
 setopt AUTO_CD
 unsetopt nomatch
 
-<<<<<<< HEAD
-# Source additional configurations
-source ~/.zsh_colors
-<<<<<<< HEAD
-=======
 # Theme
 zinit ice depth=1 lucid
 zinit light romkatv/powerlevel10k
 
 # Load p10k config (needed for prompt)
->>>>>>> 776c22b (zshrc config)
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # Essential plugins
@@ -169,17 +123,3 @@ zinit wait lucid for \
 # Local configs
 zinit wait lucid is-snippet for ~/.aliases.zsh
 
-=======
-source ~/.aliases.zsh
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-# $HOME/.cargo/bin is added to user PATH by MDM
-case ":${PATH}:" in
-    *:"$HOME/.cargo/bin":*)
-    ;;
-    *)
-    export PATH="$PATH:$HOME/.cargo/bin"
-    ;;
-esac
->>>>>>> afced96 (cleanup of zshrc)
