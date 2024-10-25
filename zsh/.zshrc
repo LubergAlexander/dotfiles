@@ -18,10 +18,22 @@ fi
 export EDITOR="nvim"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
+<<<<<<< HEAD
 export GOPATH=$HOME/go
 
 # Path setup
 path=("$GOPATH/bin" "$BREW_PREFIX/bin" "$BREW_PREFIX/sbin" $path)
+=======
+
+# Path setup
+path=(
+    "$BREW_PREFIX/bin"
+    "$BREW_PREFIX/sbin"
+    "${KREW_ROOT:-$HOME/.krew}/bin"
+    "/opt/homebrew/Cellar/mysql@8.0/8.0.40/bin"
+    $path
+)
+>>>>>>> afced96 (cleanup of zshrc)
 typeset -U path
 
 # Load Zinit
@@ -42,6 +54,10 @@ zinit light-mode for \
     zsh-users/zsh-completions
 
 zinit snippet OMZL::git.zsh
+<<<<<<< HEAD
+=======
+zinit snippet OMZL::directories.zsh
+>>>>>>> afced96 (cleanup of zshrc)
 zinit snippet OMZL::history.zsh
 zinit snippet OMZL::key-bindings.zsh
 zinit snippet OMZP::git
@@ -64,6 +80,7 @@ unsetopt nomatch
 
 # Source additional configurations
 source ~/.zsh_colors
+<<<<<<< HEAD
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
@@ -93,3 +110,17 @@ check_custom_aliases
 #source ~/.aliases.zsh
 
 
+=======
+source ~/.aliases.zsh
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+# $HOME/.cargo/bin is added to user PATH by MDM
+case ":${PATH}:" in
+    *:"$HOME/.cargo/bin":*)
+    ;;
+    *)
+    export PATH="$PATH:$HOME/.cargo/bin"
+    ;;
+esac
+>>>>>>> afced96 (cleanup of zshrc)
