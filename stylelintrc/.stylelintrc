@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "/Users/aluberg/.nvm/versions/node/v6.6.0/lib/node_modules/stylelint-config-standard",
-    "/Users/aluberg/.nvm/versions/node/v6.6.0/lib/node_modules/stylelint-config-css-modules"
-  ]
-}
