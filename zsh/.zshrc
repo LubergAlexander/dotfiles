@@ -1,7 +1,27 @@
+# Must be first lines of .zshrc
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
+typeset -g POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=false
+
+# Minimal p10k config for faster startup
+typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SEGMENT_SEPARATOR=
+typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=' '
+typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
+
 # Instant prompt initialization
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+ source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+skip_global_compinit=1
+DISABLE_COMPFIX=true
+ZSH_DISABLE_COMPFIX=true
+
+# Performance optimization
+typeset -g HISTFILE_LOCK_TIMEOUT=5
+typeset -g ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+typeset -g ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 # 256 colors & Ghostty handling
 export TERM="xterm-256color"
@@ -9,11 +29,12 @@ export TERM="xterm-256color"
 
 # Zinit initialization
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-if [[ ! -d "$ZINIT_HOME" ]]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
+[[ ! -d "$ZINIT_HOME" ]] && mkdir -p "$(dirname $ZINIT_HOME)" && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
+
+# Reduce zinit's self-reporting
+ZINIT[OPTIMIZE_OUT_DISK_ACCESSES]=1
+ZINIT[COMPINIT_OPTS]=-C
 
 # Environment setup
 export EDITOR="nvim"
@@ -22,40 +43,40 @@ export GIT_EDITOR="$EDITOR"
 # SSH-Agent(linux)
 export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 
-# Path configuration - moved after brew to use its paths
+# Path configuration
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
-  export HOMEBREW_PREFIX="/opt/homebrew";
+ export HOMEBREW_PREFIX="/opt/homebrew";
 fi
-
-
 path=(
-    "$HOMEBREW_PREFIX/bin"
-    "$HOMEBREW_PREFIX/sbin"
-    "$HOMEBREW_PREFIX/opt/mysql@8.0/bin"
-    "$HOME/.krew/bin"
-    "$HOME/.cargo/bin"
-    "$HOME/.volta/bin"
-    $path
+   "$HOMEBREW_PREFIX/bin"
+   "$HOMEBREW_PREFIX/sbin"
+   "$HOMEBREW_PREFIX/opt/mysql@8.0/bin"
+   "$HOMEBREW_PREFIX/opt/rustup/bin"
+   "$HOME/.krew/bin"
+   "$HOME/.cargo/bin"
+   "$HOME/.volta/bin"
+   $path
 )
 typeset -U path
 
 # Add completions paths
 [[ ! -d ${ZSH_CACHE_DIR}/completions ]] && mkdir -p ${ZSH_CACHE_DIR}/completions
-
 fpath=(
-    "$HOMEBREW_PREFIX/share/zsh/site-functions/"
-    "$ZSH_CACHE_DIR/completions"
-    $fpath
+   "$HOMEBREW_PREFIX/share/zsh/site-functions/"
+   "$ZSH_CACHE_DIR/completions"
+   $fpath
 )
 typeset -U fpath
 
-# Core ZSH configuration
+# Optimized completion initialization
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
-  compinit
+ compinit -C
 else
-  compinit -C
+ compinit
+ zcompile ${ZDOTDIR}/.zcompdump
 fi
+_comp_options+=(globdots)
 
 # Completion styling
 zstyle ':completion:*' menu select
@@ -67,7 +88,7 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
-# Docker completion for stacked flags
+# Docker completion
 zstyle ':completion:*:*:docker:*' option-stacking yes
 zstyle ':completion:*:*:docker-*:*' option-stacking yes
 
@@ -80,42 +101,44 @@ setopt hist_ignore_all_dups hist_find_no_dups
 setopt AUTO_CD
 unsetopt nomatch
 
-# Theme
-zinit ice depth=1 lucid
+# Theme with minified loading
+zinit ice depth=1 atload'source ~/.p10k.zsh' nocd
 zinit light romkatv/powerlevel10k
 
-# Load p10k config (needed for prompt)
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+# Essential plugins in turbo mode
+zinit wait'0' lucid for \
+   atinit"zicompinit; zicdreplay" \
+   zdharma-continuum/fast-syntax-highlighting \
+   atload"_zsh_autosuggest_start" \
+   zsh-users/zsh-autosuggestions
 
-# Essential plugins
-zinit wait lucid light-mode for \
-    zdharma-continuum/fast-syntax-highlighting \
-    zsh-users/zsh-autosuggestions \
-    zsh-users/zsh-completions \
-    Aloxaf/fzf-tab
+# Completions and tools
+zinit wait'0' lucid for \
+   blockf \
+   zsh-users/zsh-completions \
+   Aloxaf/fzf-tab
 
-# Core plugins & snippets
-zinit wait lucid for \
-    OMZL::git.zsh \
-    OMZL::history.zsh \
-    OMZL::directories.zsh \
-    OMZL::theme-and-appearance.zsh \
-    OMZP::sudo \
-    OMZP::zoxide \
-    OMZP::fzf
+# Basic OMZ libs
+zinit wait'0' lucid for \
+   OMZL::git.zsh \
+   OMZL::history.zsh \
+   OMZL::directories.zsh \
+   OMZL::theme-and-appearance.zsh
 
-# Development tools
-zinit wait lucid for \
-    OMZP::git \
-    OMZP::kubectl \
-    OMZP::kubectx \
-    OMZP::argocd \
-    OMZP::direnv \
-    OMZP::docker \
-    OMZP::helm \
-    OMZP::command-not-found \
-    OMZP::colored-man-pages
+# Common development tools
+zinit wait'1' lucid for \
+   OMZP::sudo \
+   OMZP::zoxide \
+   OMZP::fzf \
+   OMZP::git \
+   OMZP::kubectl \
+   OMZP::docker \
+   OMZP::helm
 
-# Local configs
-zinit wait lucid is-snippet for ~/.aliases.zsh
-
+# Less frequently used plugins
+zinit wait'2' lucid for \
+   OMZP::kubectx \
+   OMZP::direnv \
+   OMZP::command-not-found \
+   OMZP::colored-man-pages \
+   is-snippet ~/.aliases.zsh
