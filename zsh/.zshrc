@@ -19,6 +19,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 export EDITOR="nvim"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
+# SSH-Agent(linux)
+export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 
 # Path configuration - moved after brew to use its paths
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
