@@ -6,6 +6,7 @@ brew 'node'
 brew 'python3'
 brew 'nvim'
 brew 'neovim'
+brew "cormacrelf/tap/dark-notify"
 cask 'visual-studio-code'
 
 # System Utilities

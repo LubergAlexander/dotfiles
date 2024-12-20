@@ -141,4 +141,5 @@ zinit wait'2' lucid for \
    OMZP::direnv \
    OMZP::command-not-found \
    OMZP::colored-man-pages \
-   is-snippet ~/.aliases.zsh
+   is-snippet ~/.aliases.zsh \
+   is-snippet ~/.secrets.env

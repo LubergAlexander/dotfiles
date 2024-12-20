@@ -24,46 +24,52 @@ vim.g.mapleader = " "
 -- Plugin specifications
 require("lazy").setup({
  -- Theme (load immediately)
-  {
-   "f-person/auto-dark-mode.nvim",
-   dependencies = {
-     "ellisonleao/gruvbox.nvim",
-   },
-   lazy = false,
-   priority = 1000,
-   config = function()
-     -- Setup gruvbox first
-     require("gruvbox").setup({
-       contrast = "light",
-       transparent_mode = false,
-       italic = {
-         strings = true,
-         comments = true,
-         operators = false,
-         folds = true,
-       },
-     })
+{
+  "ellisonleao/gruvbox.nvim",
+  lazy = false,
+  priority = 1000,
+  config = function()
+    require("gruvbox").setup({
+      contrast = "light",
+      transparent_mode = false,
+      italic = {
+        strings = true,
+        comments = true,
+        operators = false,
+        folds = true,
+      },
+    })
+  end,
+},
+{
+  "cormacrelf/dark-notify",
+  lazy = false,
+  priority = 999,  -- Load right after gruvbox
+  config = function()
+    local dn = require('dark_notify')
+    dn.run({
+      schemes = {
+        dark = {
+          colorscheme = "gruvbox",
+          background = "dark",
+        },
+        light = {
+          colorscheme = "gruvbox",
+          background = "light",
+        }
+      },
+      onchange = function(mode)
+        -- Optionally add any additional customizations here
+        vim.cmd('colorscheme gruvbox')  -- Ensure colorscheme is reapplied
+      end,
+    })
 
-     -- Setup auto-dark-mode
-     require('auto-dark-mode').setup({
-       update_interval = 1000,
-       set_dark_mode = function()
-         vim.o.background = 'dark'
-         vim.cmd('colorscheme gruvbox')
-       end,
-       set_light_mode = function()
-         vim.o.background = 'light'
-         vim.cmd('colorscheme gruvbox')
-       end,
-     })
-
-     -- Manual toggle still available
-     vim.keymap.set('n', '<leader>tb', function()
-       vim.o.background = vim.o.background == "dark" and "light" or "dark"
-     end, { desc = "Toggle background dark/light" })
-   end,
- },
-
+    -- Keep the manual toggle functionality
+    vim.keymap.set('n', '<leader>tb', function()
+      dn.toggle()
+    end, { desc = "Toggle background dark/light" })
+  end,
+},
  -- Fuzzy finder
  {
    'nvim-telescope/telescope.nvim',
