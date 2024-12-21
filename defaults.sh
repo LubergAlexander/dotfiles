@@ -88,6 +88,11 @@ defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 defaults write NSGlobalDomain com.apple.springing.enabled -bool true
 defaults write NSGlobalDomain com.apple.springing.delay -float 0
 
+# Move any window by clicking ctrl+cmd+click anywhere
+defaults write -g NSWindowShouldDragOnGesture -bool true
+# And disable the animation for it
+defaults write -g NSWindowShouldDragOnGestureFeedback -bool false
+
 ###############################################################################
 # Screen                                                                       #
 ###############################################################################

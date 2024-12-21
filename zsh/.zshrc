@@ -20,8 +20,6 @@ ZSH_DISABLE_COMPFIX=true
 
 # Performance optimization
 typeset -g HISTFILE_LOCK_TIMEOUT=5
-typeset -g ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-typeset -g ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 # 256 colors & Ghostty handling
 export TERM="xterm-256color"
@@ -101,6 +99,9 @@ setopt hist_ignore_all_dups hist_find_no_dups
 setopt AUTO_CD
 unsetopt nomatch
 
+# Esc . - yank last arg
+bindkey -M viins '\e.' insert-last-word
+
 # Theme with minified loading
 zinit ice depth=1 atload'source ~/.p10k.zsh' nocd
 zinit light romkatv/powerlevel10k
@@ -108,14 +109,13 @@ zinit light romkatv/powerlevel10k
 # Essential plugins in turbo mode
 zinit wait'0' lucid for \
    atinit"zicompinit; zicdreplay" \
-   zdharma-continuum/fast-syntax-highlighting \
-   atload"_zsh_autosuggest_start" \
-   zsh-users/zsh-autosuggestions
+   zdharma-continuum/fast-syntax-highlighting
 
 # Completions and tools
 zinit wait'0' lucid for \
    blockf \
    zsh-users/zsh-completions \
+   jeffreytse/zsh-vi-mode \
    Aloxaf/fzf-tab
 
 # Basic OMZ libs
@@ -143,3 +143,4 @@ zinit wait'2' lucid for \
    OMZP::colored-man-pages \
    is-snippet ~/.aliases.zsh \
    is-snippet ~/.secrets.env
+
