@@ -41,6 +41,11 @@ export GIT_EDITOR="$EDITOR"
 # SSH-Agent(linux)
 export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 
+# FZF configuration
+export FZF_DEFAULT_COMMAND='fd --type file --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type directory --hidden --follow --exclude .git'
+
 # Path configuration
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
  export HOMEBREW_PREFIX="/opt/homebrew";

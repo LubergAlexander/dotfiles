@@ -22,3 +22,7 @@ update_neovim_venvs () {
   deactivate;
 }
 
+# Bat wrapper with dark-mode detection
+bat() {
+    BAT_THEME="gruvbox-$(dark-notify -e)" command bat "$@"
+}
