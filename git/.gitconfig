@@ -3,7 +3,7 @@
 	email = alex@luberg.me
 
 [core]
-    pager = delta
+    pager = delta --features "$(defaults read -globalDomain AppleInterfaceStyle > /dev/null 2>&1 && echo dark-mode || echo light-mode)"
 
 [interactive]
     diffFilter = delta --color-only
@@ -16,11 +16,10 @@
 [merge]
     conflictstyle = zdiff3
 
-# TODO: Add auto detection with dark-notify
-[delta "light"]
+[delta "light-mode"]
    light = true
    syntax-theme = "gruvbox-light"
 
-[delta "dark"]
+[delta "dark-mode"]
    dark = true
    syntax-theme = "gruvbox-dark"
