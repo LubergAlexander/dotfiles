@@ -50,11 +50,15 @@ export FZF_ALT_C_COMMAND='fd --type directory --hidden --follow --exclude .git'
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
  export HOMEBREW_PREFIX="/opt/homebrew";
 fi
+
+export VOLTA_HOME="$HOME/.volta"
+
 path=(
    "$HOMEBREW_PREFIX/bin"
    "$HOMEBREW_PREFIX/sbin"
    "$HOMEBREW_PREFIX/opt/mysql@8.0/bin"
    "$HOMEBREW_PREFIX/opt/rustup/bin"
+   "$VOLTA_HOME/bin"
    "$HOME/.krew/bin"
    "$HOME/.cargo/bin"
    "$HOME/.volta/bin"
