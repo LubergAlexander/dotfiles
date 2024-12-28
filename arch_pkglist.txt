@@ -32,4 +32,7 @@ jq
 jless
 llm
 docker
+pv
+git-lfs
+direnv
 
