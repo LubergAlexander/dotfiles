@@ -101,7 +101,8 @@ defaults write -g NSWindowShouldDragOnGestureFeedback -bool false
 defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
 
-# Save screenshots to Downloads folder
+# Save screenshots to Screenshots folder
+mkdir ~/Screenshots
 defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
 
 # Save screenshots in PNG format
