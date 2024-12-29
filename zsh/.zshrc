@@ -38,8 +38,15 @@ ZINIT[COMPINIT_OPTS]=-C
 export EDITOR="nvim"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
-# SSH-Agent(linux)
-export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
+
+# SSH-Agent
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS-specific setup
+  export SSH_AUTH_SOCK=$(launchctl getenv SSH_AUTH_SOCK)
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  # Linux-specific setup
+  export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
+fi
 
 # FZF configuration
 export FZF_DEFAULT_COMMAND='fd --type file --hidden --follow --exclude .git'
