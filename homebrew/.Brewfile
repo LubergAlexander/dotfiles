@@ -56,7 +56,7 @@ brew "az"
 
 # Desktop Applications
 cask "alfred"
-cask "ghostty"
+cask "ghostty@tip"
 cask "slack"
 cask "spotify"
 cask "plexamp"
