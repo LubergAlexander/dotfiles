@@ -16,6 +16,7 @@ brew "direnv"
 tap "cormacrelf/tap"
 brew "cormacrelf/tap/dark-notify"
 cask "visual-studio-code"
+brew "cursor"
 
 # System Utilities
 brew "coreutils"
@@ -33,6 +34,8 @@ brew "topgrade"
 brew "stow"
 brew "bat"
 brew "pv"
+tap "buo/cask-upgrade"
+
 
 # Shell & Navigation
 brew "zsh"

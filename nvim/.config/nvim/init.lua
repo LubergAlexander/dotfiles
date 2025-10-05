@@ -3,6 +3,9 @@ vim.loader.enable() -- Enable native Lua loader
 vim.opt.shadafile = "NONE" -- Disable shada on init
 vim.opt.updatetime = 250 -- Faster updates
 vim.g.python3_host_prog = '~/.virtualenvs/neovim3/bin/python'
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_node_provider = 0
 
 -- Bootstrap lazy.nvim plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -40,6 +43,11 @@ require("lazy").setup({
       },
     })
   end,
+},
+-- Mini icons
+{
+  "echasnovski/mini.icons",
+  version = false,
 },
 {
   "cormacrelf/dark-notify",
@@ -261,7 +269,10 @@ require("lazy").setup({
  {
    'numToStr/Comment.nvim',
    event = "BufReadPost",
-   config = function() require('Comment').setup() end,
+   config = function() require('Comment').setup({
+      toggler  = { line = "gC",  block = "gB" },
+      opleader = { line = "gy",  block = "gY" },
+   }) end,
  },
 
  -- Indent guides
@@ -312,6 +323,80 @@ require("lazy").setup({
    "Vimjas/vim-python-pep8-indent",
    ft = "python",
  },
+
+ -- Avante AI plugin
+ --
+{
+  "yetone/avante.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "MunifTanjim/nui.nvim",
+    "echasnovski/mini.icons",
+    "MeanderingProgrammer/render-markdown.nvim",
+    "stevearc/dressing.nvim",
+  },
+  build = "make",
+  event = "VeryLazy",
+  opts = {
+    mode = "agentic",
+    provider = "claude",
+    suggestion = {
+      debounce = 100,
+    },
+    providers = {
+      claude = {
+        endpoint = "https://api.anthropic.com",
+        model = "claude-sonnet-4-5",
+        timeout = 30000,
+        extra_request_body = {
+          temperature = 0.0,
+          max_tokens = 4096,
+        },
+      },
+      openai = {
+        endpoint = os.getenv("OPENAI_API_URL") or "https://api.openai.com/v1/chat/completions",
+        model = "gpt-4o",
+        timeout = 30000,
+        extra_request_body = {
+          temperature = 0.0,
+          max_tokens = 4096,
+        },
+      },
+      openrouter = {
+        endpoint = "https://openrouter.ai/v1/chat/completions",
+        model = "openai/gpt-4o-vision",
+        timeout = 30000,
+        extra_request_body = {
+          temperature = 0.0,
+          max_tokens = 4096,
+        },
+      },
+      grok = {
+        endpoint = "https://api.x.com/grok",
+        model = "grok-1.5-coding",
+        timeout = 30000,
+        extra_request_body = {
+          temperature = 0.0,
+          max_tokens = 4096,
+        },
+      },
+    },
+    disabled_tools = { "bash", "python" },
+  },
+  config = function(_, opts)
+    require("avante").setup(opts)
+
+    vim.keymap.set("n", "<leader>am", function()
+      local choices = { "claude", "openai", "openrouter", "grok" }
+      vim.ui.select(choices, { prompt = "Switch Avante provider:" }, function(choice)
+        if choice then
+          require("avante").setup(vim.tbl_extend("force", opts, { provider = choice }))
+          vim.notify("Avante provider → " .. choice)
+        end
+      end)
+    end, { desc = "Switch Avante provider" })
+  end,
+}
 })
 
 -- General settings

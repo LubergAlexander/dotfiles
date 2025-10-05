@@ -69,6 +69,7 @@ path=(
    "$HOME/.krew/bin"
    "$HOME/.cargo/bin"
    "$HOME/.volta/bin"
+   "$HOME/.luarocks/bin"
    $path
 )
 typeset -U path
