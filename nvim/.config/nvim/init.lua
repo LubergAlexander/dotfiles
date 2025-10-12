@@ -237,7 +237,6 @@ require("lazy").setup({
             -- Snippet engine and sources
             {
                 "L3MON4D3/LuaSnip",
-                version = "<CurrentMajor>.*",    -- follow latest release
                 build = "make install_jsregexp", -- install extended regex support for snippets:contentReference[oaicite:2]{index=2}
                 event = "InsertEnter",
                 dependencies = { "saadparwaiz1/cmp_luasnip" }
