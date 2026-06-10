@@ -16,11 +16,18 @@ make all
 # 3. Apply macOS system preferences (key repeat, dock, finder, ...)
 ./defaults.sh
 
-# 4. Machine-specific git identity (not tracked in this repo)
+# 4. Machine-specific git identity + credential helper (not tracked in this repo)
+#    gh needs an absolute path: brew runs git with a sanitized PATH
 cat > ~/.gitconfig.local <<EOF
 [user]
 	name = Your Name
 	email = you@example.com
+[credential "https://github.com"]
+	helper =
+	helper = !$(which gh) auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !$(which gh) auth git-credential
 EOF
 ```
 

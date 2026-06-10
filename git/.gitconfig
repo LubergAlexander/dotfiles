@@ -1,4 +1,5 @@
-# Identity lives in ~/.gitconfig.local (machine-specific, not in the repo)
+# Identity and credential helpers live in ~/.gitconfig.local (machine-specific,
+# not in the repo — gh's credential helper needs an absolute path per machine)
 [include]
 	path = ~/.gitconfig.local
 
@@ -22,9 +23,3 @@
 	required = true
 [init]
 	defaultBranch = main
-[credential "https://github.com"]
-	helper =
-	helper = !gh auth git-credential
-[credential "https://gist.github.com"]
-	helper =
-	helper = !gh auth git-credential
