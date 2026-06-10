@@ -45,7 +45,7 @@ defaults write com.apple.dock minimize-to-application -bool true
 # Finder                                                                       #
 ###############################################################################
 
-# Show hidden files by default
+# Don't show hidden files
 defaults write com.apple.finder AppleShowAllFiles -bool false
 
 # Show all filename extensions
@@ -102,7 +102,7 @@ defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
 
 # Save screenshots to Screenshots folder
-mkdir ~/Screenshots
+mkdir -p ~/Screenshots
 defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
 
 # Save screenshots in PNG format

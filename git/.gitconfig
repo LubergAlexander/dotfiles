@@ -1,9 +1,9 @@
-[user]
-	name = Alexander Luberg
-	email = alex@luberg.me
+# Identity lives in ~/.gitconfig.local (machine-specific, not in the repo)
+[include]
+	path = ~/.gitconfig.local
 
 [core]
-    pager = delta --features "$(defaults read -globalDomain AppleInterfaceStyle > /dev/null 2>&1 && echo dark-mode || echo light-mode)"
+    pager = delta
 
 [interactive]
     diffFilter = delta --color-only
@@ -15,14 +15,6 @@
 
 [merge]
     conflictstyle = zdiff3
-
-[delta "light-mode"]
-   light = true
-   syntax-theme = "gruvbox-light"
-
-[delta "dark-mode"]
-   dark = true
-   syntax-theme = "gruvbox-dark"
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -31,8 +23,8 @@
 [init]
 	defaultBranch = main
 [credential "https://github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper =
+	helper = !gh auth git-credential
 [credential "https://gist.github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper =
+	helper = !gh auth git-credential

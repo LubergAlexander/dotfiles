@@ -21,10 +21,6 @@ ZSH_DISABLE_COMPFIX=true
 # Performance optimization
 typeset -g HISTFILE_LOCK_TIMEOUT=5
 
-# 256 colors & Ghostty handling
-export TERM="xterm-256color"
-[ -n "$TMUX" ] && export TERM="tmux-256color"
-
 # Zinit initialization
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [[ ! -d "$ZINIT_HOME" ]] && mkdir -p "$(dirname $ZINIT_HOME)" && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
@@ -76,6 +72,7 @@ path=(
 typeset -U path
 
 # Add completions paths
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 [[ ! -d ${ZSH_CACHE_DIR}/completions ]] && mkdir -p ${ZSH_CACHE_DIR}/completions
 fpath=(
    "$HOMEBREW_PREFIX/share/zsh/site-functions/"
@@ -85,12 +82,13 @@ fpath=(
 typeset -U fpath
 
 # Optimized completion initialization
+# Use the cached dump (-C) if it was refreshed within the last 24h
 autoload -Uz compinit
-if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]]; then
  compinit -C
 else
  compinit
- zcompile ${ZDOTDIR}/.zcompdump
+ zcompile ${ZDOTDIR:-$HOME}/.zcompdump
 fi
 _comp_options+=(globdots)
 

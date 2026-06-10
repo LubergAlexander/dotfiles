@@ -1,6 +1,5 @@
 -- Performance optimizations
 vim.loader.enable()
-vim.opt.shadafile = "NONE"
 vim.opt.updatetime = 250
 vim.g.python3_host_prog = '~/.virtualenvs/neovim3/bin/python'
 vim.g.loaded_ruby_provider = 0
@@ -9,7 +8,7 @@ vim.g.loaded_node_provider = 0
 
 -- Bootstrap lazy.nvim (plugin manager)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({
         "git", "clone", "--filter=blob:none",
         "https://github.com/folke/lazy.nvim.git",
@@ -20,6 +19,17 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Set leader key
 vim.g.mapleader = " "
+
+-- Register filetypes that gopls/yamlls declare but Neovim doesn't know natively
+vim.filetype.add({
+    extension = { gotmpl = "gotmpl" },
+    pattern = {
+        [".*/docker%-compose%.ya?ml"] = "yaml.docker-compose",
+        ["compose%.ya?ml"] = "yaml.docker-compose",
+        ["%.gitlab%-ci%.ya?ml"] = "yaml.gitlab",
+        [".*/helm/.*%.ya?ml"] = "yaml.helm-values",
+    },
+})
 
 -- Plugin specifications
 require("lazy").setup({
@@ -96,24 +106,23 @@ require("lazy").setup({
 
     -- Mason package manager
     {
-        "williamboman/mason.nvim",
+        "mason-org/mason.nvim",
         cmd = "Mason",
         opts = {},
     },
     -- Mason-LSPConfig bridge
     {
-        "williamboman/mason-lspconfig.nvim",
-        dependencies = { "williamboman/mason.nvim" },
+        "mason-org/mason-lspconfig.nvim",
+        dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },
         opts = {
             ensure_installed = { "gopls", "pyright", "ruff", "bashls", "yamlls", "lua_ls" },
-            automatic_installation = true,
         },
     },
 
     -- LSP configurations (Neovim 0.11+ native API)
     {
         "neovim/nvim-lspconfig",
-        event = { "BufReadPre", "BufNewFile" },
+        lazy = false,
         config = function()
             -- Configure LSP servers using vim.lsp.config (new in 0.11)
             vim.lsp.config('gopls', {
@@ -197,10 +206,9 @@ require("lazy").setup({
                     -- vim.keymap.set('n', 'grt', vim.lsp.buf.type_definition, opts)
                     -- vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, opts)
 
-                    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
                     vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
-                    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-                    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+                    vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = -1 }) end, opts)
+                    vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, opts)
                     vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
                     vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format({ async = true }) end, opts) -- moved to <leader>F
 
@@ -237,7 +245,7 @@ require("lazy").setup({
             -- Snippet engine and sources
             {
                 "L3MON4D3/LuaSnip",
-                build = "make install_jsregexp", -- install extended regex support for snippets:contentReference[oaicite:2]{index=2}
+                build = "make install_jsregexp", -- install extended regex support for snippets
                 event = "InsertEnter",
                 dependencies = { "saadparwaiz1/cmp_luasnip" }
             },
@@ -389,7 +397,6 @@ require("lazy").setup({
             "MunifTanjim/nui.nvim",
             "echasnovski/mini.icons",
             "MeanderingProgrammer/render-markdown.nvim",
-            "stevearc/dressing.nvim",
         },
         build = "make",
         event = "VeryLazy",
@@ -401,7 +408,7 @@ require("lazy").setup({
             providers = {
                 claude = {
                     endpoint = "https://api.anthropic.com",
-                    model = "claude-sonnet-4-20250514",
+                    model = "claude-sonnet-4-6",
                     timeout = 30000,
                     extra_request_body = { temperature = 0.0, max_tokens = 4096 },
                 },
@@ -607,7 +614,7 @@ require("lazy").setup({
             "nvim-lua/plenary.nvim",
             "antoinemadec/FixCursorHold.nvim",
             "nvim-treesitter/nvim-treesitter",
-            "nvim-neotest/neotest-go",
+            "fredrikaverpil/neotest-golang",
         },
         keys = {
             { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test: Run current file" },
@@ -615,18 +622,14 @@ require("lazy").setup({
             { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Test: Toggle summary" },
             { "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Test: Show output" },
             { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Test: Debug nearest" },
-            { "<leader>tA", function() require("neotest").run.run(vim.fn.getcwd() .. "/...") end, desc = "Test: Run all tests (recursive)" },
+            { "<leader>tA", function() require("neotest").run.run(vim.fn.getcwd()) end, desc = "Test: Run all tests (recursive)" },
             { "<leader>tp", function() require("neotest").output_panel.toggle() end, desc = "Test: Toggle output panel" },
         },
         config = function()
             require("neotest").setup({
                 adapters = {
-                    require("neotest-go")({
-                        args = { "-count=1", "-timeout=60s", "-race" },
-                        recursive_run = true,
-                        experimental = {
-                            test_table = true,
-                        },
+                    require("neotest-golang")({
+                        go_test_args = { "-count=1", "-timeout=60s", "-race" },
                     }),
                 },
                 output = {
@@ -654,6 +657,8 @@ require("lazy").setup({
             })
         end,
     },
+}, {
+    rocks = { enabled = false }, -- no plugin needs luarocks
 })
 
 -- General editor settings
@@ -704,6 +709,7 @@ vim.keymap.set('v', ';', ':')
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*",
     callback = function()
+        if not vim.bo.modifiable then return end
         local save_cursor = vim.fn.getpos(".")
         vim.cmd([[ %s/\s\+$//e ]])
         vim.fn.setpos(".", save_cursor)
