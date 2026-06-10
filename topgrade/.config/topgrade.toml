@@ -15,7 +15,8 @@
 # sudo_command = "sudo"
 
 # Disable specific steps - same options as the command line flag
-disable = ["helix"]
+# Disabling brew_cask to use custom command with -f flag instead
+disable = ["helix", "brew_cask"]
 
 # Ignore failures for these steps
 # ignore_failures = ["powershell"]
@@ -91,12 +92,6 @@ disable = ["helix"]
 # "Emacs Snapshot" = "rm -rf ~/.emacs.d/elpa.bak && cp -rl ~/.emacs.d/elpa ~/.emacs.d/elpa.bak"
 
 
-# Custom commands
-[commands]
-# "Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"
-# "Custom command using interactive shell (unix)" = "-i vim_upgrade"
-
-
 [python]
 # enable_pip_review = true                         ###disabled by default
 # enable_pip_review_local = true                   ###disabled by default
@@ -119,19 +114,19 @@ disable = ["helix"]
 # For the BrewCask step
 # If `Repo Cask Upgrade` exists, then use the `-a` option.
 # Otherwise, use the `--greedy` option.
-# greedy_cask = true
+# greedy_cask = true  # Disabled - using custom command instead
 
 # For the BrewCask step
 # If `Repo Cask Upgrade` does not exist, then use the `--greedy_latest` option.
 # NOTE: the above entry `greedy_cask` contains this entry, though you can enable
 # both of them, they won't clash with each other.
-# greedy_latest = true
+greedy_latest = true
 
 # For the BrewCask step
 # If `Repo Cask Upgrade` does not exist, then use the `--greedy_auto_updates` option.
 # NOTE: the above entry `greedy_cask` contains this entry, though you can enable
 # both of them, they won't clash with each other.
-# greedy_auto_updates = true
+greedy_auto_updates = true
 
 # For the BrewFormula step
 # Execute `brew autoremove` after the step.
@@ -139,7 +134,11 @@ disable = ["helix"]
 
 # For the BrewFormula step
 # Upgrade formulae built from the HEAD branch; `brew upgrade --fetch-HEAD`
-# fetch_head = true
+fetch_head = true
+
+[commands]
+# Custom brew cu command with -f flag to force update casks marked as "latest"
+"Brew Cask Upgrade" = "brew cu -afy"
 
 
 [linux]

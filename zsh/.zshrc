@@ -70,6 +70,7 @@ path=(
    "$HOME/.cargo/bin"
    "$HOME/.volta/bin"
    "$HOME/.luarocks/bin"
+   "$HOME/go/bin"
    $path
 )
 typeset -U path
@@ -117,7 +118,7 @@ setopt AUTO_CD
 unsetopt nomatch
 
 # Esc . - yank last arg
-bindkey -M viins '\e.' insert-last-word
+bindkey '\e.' insert-last-word
 
 # Theme with minified loading
 zinit ice depth=1 atload'source ~/.p10k.zsh' nocd
@@ -132,7 +133,6 @@ zinit wait'0' lucid for \
 zinit wait'0' lucid for \
    blockf \
    zsh-users/zsh-completions \
-   jeffreytse/zsh-vi-mode \
    Aloxaf/fzf-tab
 
 # Basic OMZ libs
@@ -160,4 +160,9 @@ zinit wait'2' lucid for \
    OMZP::colored-man-pages \
    is-snippet ~/.aliases.zsh \
    is-snippet ~/.secrets.env
+
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/aluberg/.lmstudio/bin"
+# End of LM Studio CLI section
 

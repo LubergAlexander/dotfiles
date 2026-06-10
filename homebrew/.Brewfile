@@ -16,7 +16,7 @@ brew "direnv"
 tap "cormacrelf/tap"
 brew "cormacrelf/tap/dark-notify"
 cask "visual-studio-code"
-brew "cursor"
+cask "cursor"
 
 # System Utilities
 brew "coreutils"

@@ -270,20 +270,33 @@ require("lazy").setup({
         end,
     },
 
-    -- Treesitter for syntax highlighting and indent
+    -- Treesitter for syntax highlighting and indent (main branch — Neovim 0.11+ rewrite)
     {
         "nvim-treesitter/nvim-treesitter",
-        event = { "BufReadPost", "BufNewFile" },
+        branch = "main",
+        lazy = false,
         build = ":TSUpdate",
         config = function()
-            require("nvim-treesitter.configs").setup({
-                ensure_installed = { "go", "python", "bash", "yaml", "lua", "vim", "gomod", "gosum", "markdown", "markdown_inline" },
-                auto_install = true,
-                highlight = { enable = true },
-                indent = {
-                    enable = true,
-                    disable = { "python", "yaml" } -- disable TS indent for these (using vim-python-pep8-indent)
-                },
+            require("nvim-treesitter").setup()
+
+            local parsers = {
+                "go", "python", "bash", "yaml", "lua", "vim", "vimdoc",
+                "gomod", "gosum", "markdown", "markdown_inline",
+            }
+            require("nvim-treesitter").install(parsers)
+
+            local indent_disabled = { python = true, yaml = true }
+
+            vim.api.nvim_create_autocmd("FileType", {
+                callback = function(args)
+                    local buf = args.buf
+                    local ft = args.match
+                    local lang = vim.treesitter.language.get_lang(ft) or ft
+                    local ok = pcall(vim.treesitter.start, buf, lang)
+                    if ok and not indent_disabled[ft] then
+                        vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                    end
+                end,
             })
         end,
     },
@@ -506,42 +519,41 @@ require("lazy").setup({
                         }
                     end,
 
-                    -- Go (dlv)
+                    -- Go (dlv) - using recommended jobstart approach
                     delve = function()
-                        dap.adapters.delve = {
-                            type = "server",
-                            port = "${port}",
-                            executable = {
-                                command = "dlv",
-                                args = { "dap", "-l", "127.0.0.1:${port}" },
-                            },
-                        }
+                        dap.adapters.go = function(callback, _)
+                            local port = 38697
+                            -- Start Delve with DAP on the given port
+                            vim.fn.jobstart(
+                                { "dlv", "dap", "-l", "127.0.0.1:" .. port },
+                                { detach = true, stdout_buffered = true }
+                            )
+                            -- Give Delve a moment to start, then inform nvim-dap
+                            vim.defer_fn(function()
+                                callback({ type = "server", host = "127.0.0.1", port = port })
+                            end, 100)
+                        end
+
                         dap.configurations.go = {
                             {
-                                type = "delve",
-                                name = "▶ Go: current file",
+                                type = "go",
+                                name = "Debug Current File",
                                 request = "launch",
                                 program = "${file}",
                             },
                             {
-                                type = "delve",
-                                name = "▶ Go: package",
-                                request = "launch",
-                                program = "${workspaceFolder}",
-                            },
-                            {
-                                type = "delve",
-                                name = "▶ Go: test (pkg)",
+                                type = "go",
+                                name = "Debug Nearest Test",
                                 request = "launch",
                                 mode = "test",
-                                program = "${workspaceFolder}",
+                                program = "./${relativeFileDirname}",
                             },
                             {
-                                type = "delve",
-                                name = "▶ Go: test (file)",
+                                type = "go",
+                                name = "Debug Package (all tests)",
                                 request = "launch",
                                 mode = "test",
-                                program = "${file}",
+                                program = "./${relativeFileDirname}",
                             },
                         }
                     end,
@@ -584,6 +596,62 @@ require("lazy").setup({
                     { "<leader>dx", desc = "Terminate" },
                 })
             end
+        end,
+    },
+
+    -- Test runner: neotest with Go adapter (based on research)
+    {
+        "nvim-neotest/neotest",
+        dependencies = {
+            "nvim-neotest/nvim-nio",
+            "nvim-lua/plenary.nvim",
+            "antoinemadec/FixCursorHold.nvim",
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-neotest/neotest-go",
+        },
+        keys = {
+            { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test: Run current file" },
+            { "<leader>tn", function() require("neotest").run.run() end, desc = "Test: Run nearest test" },
+            { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Test: Toggle summary" },
+            { "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Test: Show output" },
+            { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Test: Debug nearest" },
+            { "<leader>tA", function() require("neotest").run.run(vim.fn.getcwd() .. "/...") end, desc = "Test: Run all tests (recursive)" },
+            { "<leader>tp", function() require("neotest").output_panel.toggle() end, desc = "Test: Toggle output panel" },
+        },
+        config = function()
+            require("neotest").setup({
+                adapters = {
+                    require("neotest-go")({
+                        args = { "-count=1", "-timeout=60s", "-race" },
+                        recursive_run = true,
+                        experimental = {
+                            test_table = true,
+                        },
+                    }),
+                },
+                output = {
+                    enabled = true,
+                    open_on_run = "short",
+                },
+                quickfix = {
+                    enabled = false,
+                },
+                status = {
+                    enabled = true,
+                    virtual_text = true,
+                    signs = true,
+                },
+                icons = {
+                    running_animated = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+                },
+                summary = {
+                    animated = true,
+                    enabled = true,
+                },
+                discovery = {
+                    enabled = true,
+                },
+            })
         end,
     },
 })
