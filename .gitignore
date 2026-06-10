@@ -7,3 +7,4 @@ nvim/.config/nvim/temp
 nvim/.config/nvim/repos
 tmux/.config/tmux/plugins
 *.bak
+.claude/
