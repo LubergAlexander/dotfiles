@@ -2,7 +2,9 @@ alias gpm='gcm && ggpull && gco -'
 alias brewall='brew update && brew upgrade && brew cleanup'
 alias vim='nvim'
 alias vimdiff='nvim -d'
-alias dockerrmall="docker rm -f `docker ps -a -q`"
+alias ls='eza'
+alias ll='eza -la --git'
+alias tree='eza --tree'
 alias pip-upgrade="pip list --outdated | sed 's/(.*//g' | xargs -n1 pip install -U"
 
 update_neovim_venvs () {

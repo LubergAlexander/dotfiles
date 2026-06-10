@@ -124,6 +124,11 @@ require("lazy").setup({
         "neovim/nvim-lspconfig",
         lazy = false,
         config = function()
+            -- Advertise blink.cmp's completion capabilities to all servers
+            vim.lsp.config('*', {
+                capabilities = require('blink.cmp').get_lsp_capabilities(),
+            })
+
             -- Configure LSP servers using vim.lsp.config (new in 0.11)
             vim.lsp.config('gopls', {
                 settings = {
@@ -183,34 +188,15 @@ require("lazy").setup({
 
                     local opts = { buffer = bufnr, silent = true }
 
-                    -- LSP-related keymaps:
-                    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+                    -- Only non-default keymaps; Neovim 0.11+ already ships:
+                    -- grn (rename), gra (code action), grr (references),
+                    -- gri (implementation), grt (type definition), gO (symbols),
+                    -- K (hover), <C-s> (signature help), [d/]d (diagnostics)
                     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-                    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-                    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-                    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-                    -- Workspace management (optional, can remove if not used):
-                    -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
-                    -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
-                    -- vim.keymap.set('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, opts)
-                    vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
-                    -- Code actions and rename:
-                    vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts)
-                    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-                    -- References (adjusted mapping to avoid overlap):
-                    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-                    -- If you prefer grouping under 'gr', use:
-                    -- vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts)
-                    -- vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts)
-                    -- vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts)
-                    -- vim.keymap.set('n', 'grt', vim.lsp.buf.type_definition, opts)
-                    -- vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, opts)
-
+                    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
                     vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
-                    vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = -1 }) end, opts)
-                    vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, opts)
                     vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
-                    vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format({ async = true }) end, opts) -- moved to <leader>F
+                    vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format({ async = true }) end, opts)
 
                     -- Format on save if supported by this server
                     if client:supports_method('textDocument/formatting') then -- use colon method
@@ -237,45 +223,18 @@ require("lazy").setup({
         end,
     },
 
-    -- Auto-completion (nvim-cmp and LuaSnip)
+    -- Auto-completion (blink.cmp — LSP/path/buffer/snippets built in)
     {
-        "hrsh7th/nvim-cmp",
+        "saghen/blink.cmp",
+        version = "1.*", -- v2 still has breaking changes; stay on stable
         event = { "InsertEnter", "CmdlineEnter" },
-        dependencies = {
-            -- Snippet engine and sources
-            {
-                "L3MON4D3/LuaSnip",
-                build = "make install_jsregexp", -- install extended regex support for snippets
-                event = "InsertEnter",
-                dependencies = { "saadparwaiz1/cmp_luasnip" }
-            },
-            "hrsh7th/cmp-nvim-lsp",
-            -- (you can add other sources like cmp-buffer, cmp-path here if needed)
+        opts = {
+            -- 'enter' preset: <CR> accepts, <C-space> opens menu/docs,
+            -- <C-e> hides, <C-b>/<C-f> scroll docs (matches old cmp mappings)
+            keymap = { preset = "enter" },
+            sources = { default = { "lsp", "path", "snippets", "buffer" } },
+            fuzzy = { implementation = "prefer_rust_with_warning" },
         },
-        config = function()
-            local cmp = require('cmp')
-            local luasnip = require('luasnip')
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        luasnip.lsp_expand(args.body) -- use LuaSnip to expand snippet
-                    end,
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-                    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                    ['<C-Space>'] = cmp.mapping.complete(),
-                    ['<C-e>'] = cmp.mapping.abort(),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-                }),
-                sources = cmp.config.sources({
-                    { name = 'nvim_lsp' },
-                    { name = 'luasnip' },
-                }, {
-                    { name = 'buffer' },
-                })
-            })
-        end,
     },
 
     -- Treesitter for syntax highlighting and indent (main branch — Neovim 0.11+ rewrite)
@@ -326,7 +285,28 @@ require("lazy").setup({
     -- Git integration (Fugitive)
     {
         "tpope/vim-fugitive",
-        cmd = { "Git", "Gwrite", "Gcommit", "Gpush", "Gpull" },
+        cmd = { "Git", "Gwrite" },
+    },
+
+    -- Git hunk signs, staging, and blame
+    {
+        "lewis6991/gitsigns.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {
+            on_attach = function(bufnr)
+                local gs = require("gitsigns")
+                local function map(mode, lhs, rhs, desc)
+                    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = "Git: " .. desc })
+                end
+                map("n", "]h", function() gs.nav_hunk("next") end, "Next hunk")
+                map("n", "[h", function() gs.nav_hunk("prev") end, "Previous hunk")
+                map("n", "<leader>hs", gs.stage_hunk, "Stage hunk")
+                map("n", "<leader>hr", gs.reset_hunk, "Reset hunk")
+                map("n", "<leader>hp", gs.preview_hunk, "Preview hunk")
+                map("n", "<leader>hb", function() gs.blame_line({ full = true }) end, "Blame line")
+                map("n", "<leader>hd", gs.diffthis, "Diff against index")
+            end,
+        },
     },
 
     -- Status line (Lualine)
@@ -346,21 +326,8 @@ require("lazy").setup({
         config = function() require("nvim-autopairs").setup() end,
     },
 
-    -- Comment toggling
-    {
-        "numToStr/Comment.nvim",
-        event = "BufReadPost",
-        config = function()
-            require('Comment').setup({
-                toggler  = { line = "gC", block = "gB" }, -- use gC to toggle line comment, gB for block
-                opleader = { line = "gy", block = "gY" }, -- use gy motion to comment
-                mappings = {
-                    basic = true,                         -- set to false if you want to disable default `gc` mappings
-                    extra = false,
-                },
-            })
-        end,
-    },
+    -- Comment toggling: native since Neovim 0.10 (gcc toggles a line,
+    -- gc{motion}/gc in visual mode comments a range) — no plugin needed.
 
     -- Indent guides (blankline)
     {
@@ -389,69 +356,40 @@ require("lazy").setup({
         ft = "python",
     },
 
-    -- Avante AI assistant plugin (with providers)
+    -- Claude Code integration (same IDE protocol as the official VS Code
+    -- extension: selection context, diff review in nvim; uses the claude CLI)
     {
-        "yetone/avante.nvim",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "echasnovski/mini.icons",
-            "MeanderingProgrammer/render-markdown.nvim",
+        "coder/claudecode.nvim",
+        dependencies = { "folke/snacks.nvim" },
+        config = true,
+        keys = {
+            { "<leader>ac", "<cmd>ClaudeCode<cr>",           desc = "Toggle Claude Code" },
+            { "<leader>af", "<cmd>ClaudeCodeFocus<cr>",      desc = "Focus Claude Code" },
+            { "<leader>as", "<cmd>ClaudeCodeSend<cr>",       mode = "v",                 desc = "Send selection to Claude" },
+            { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept Claude diff" },
+            { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>",   desc = "Deny Claude diff" },
         },
-        build = "make",
-        event = "VeryLazy",
+    },
+
+    -- Cursor Agent CLI in a managed terminal (sidekick wraps AI CLIs)
+    {
+        "folke/sidekick.nvim",
         opts = {
-            provider = "claude",
-            mode = "agentic",
-            disabled_tools = { "bash", "python" },
-            suggestion = { debounce = 100 },
-            providers = {
-                claude = {
-                    endpoint = "https://api.anthropic.com",
-                    model = "claude-sonnet-4-6",
-                    timeout = 30000,
-                    extra_request_body = { temperature = 0.0, max_tokens = 4096 },
-                },
-                openai = {
-                    endpoint = os.getenv("OPENAI_API_URL") or "https://api.openai.com/v1",
-                    model = "gpt-4o",
-                    timeout = 30000,
-                    extra_request_body = { temperature = 0.0, max_tokens = 4096 },
-                },
-                openrouter = {
-                    endpoint = "https://openrouter.ai/api/v1",
-                    model = "openai/gpt-4o",
-                    timeout = 30000,
-                    extra_request_body = { temperature = 0.0, max_tokens = 4096 },
-                },
-                grok = {
-                    endpoint = "https://api.x.ai/v1",
-                    model = "grok-2-1212",
-                    timeout = 30000,
-                    extra_request_body = { temperature = 0.0, max_tokens = 4096 },
-                },
+            nes = { enabled = false }, -- no Copilot LSP; CLI integration only
+        },
+        keys = {
+            {
+                "<leader>cc",
+                function() require("sidekick.cli").toggle({ name = "cursor", focus = true }) end,
+                desc = "Toggle Cursor Agent",
             },
-            behaviour = {
-                auto_approve_tool_permissions = false,
+            {
+                "<leader>cs",
+                function() require("sidekick.cli").send({ selection = true }) end,
+                mode = "v",
+                desc = "Send selection to Cursor Agent",
             },
         },
-        config = function(_, opts)
-            -- Disable unused renderers (no LaTeX, no HTML to avoid warnings)
-            require('render-markdown').setup({
-                html  = { enabled = false },
-                latex = { enabled = false },
-            })
-            require("avante").setup(opts)
-            vim.keymap.set("n", "<leader>am", function()
-                local providers = { "claude", "openai", "openrouter", "grok" }
-                vim.ui.select(providers, { prompt = "Switch Avante provider:" }, function(choice)
-                    if choice then
-                        require("avante").setup(vim.tbl_extend("force", opts, { provider = choice }))
-                        vim.notify("Avante provider → " .. choice)
-                    end
-                end)
-            end, { desc = "Switch Avante provider" })
-        end,
     },
     -- Debugging: nvim-dap + UI + virtual text + Mason integration
     {
@@ -617,13 +555,13 @@ require("lazy").setup({
             "fredrikaverpil/neotest-golang",
         },
         keys = {
-            { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test: Run current file" },
-            { "<leader>tn", function() require("neotest").run.run() end, desc = "Test: Run nearest test" },
-            { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Test: Toggle summary" },
+            { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end,   desc = "Test: Run current file" },
+            { "<leader>tn", function() require("neotest").run.run() end,                     desc = "Test: Run nearest test" },
+            { "<leader>ts", function() require("neotest").summary.toggle() end,              desc = "Test: Toggle summary" },
             { "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Test: Show output" },
             { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Test: Debug nearest" },
-            { "<leader>tA", function() require("neotest").run.run(vim.fn.getcwd()) end, desc = "Test: Run all tests (recursive)" },
-            { "<leader>tp", function() require("neotest").output_panel.toggle() end, desc = "Test: Toggle output panel" },
+            { "<leader>tA", function() require("neotest").run.run(vim.fn.getcwd()) end,      desc = "Test: Run all tests (recursive)" },
+            { "<leader>tp", function() require("neotest").output_panel.toggle() end,         desc = "Test: Toggle output panel" },
         },
         config = function()
             require("neotest").setup({

@@ -36,11 +36,9 @@ export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
 
 # SSH-Agent
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # macOS-specific setup
-  export SSH_AUTH_SOCK=$(launchctl getenv SSH_AUTH_SOCK)
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  # Linux-specific setup
+# macOS: launchd already sets SSH_AUTH_SOCK per session — inherit it untouched.
+# tmux refreshes it on attach via its default update-environment list.
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 fi
 
@@ -54,17 +52,12 @@ if [[ -f "/opt/homebrew/bin/brew" ]]; then
  export HOMEBREW_PREFIX="/opt/homebrew";
 fi
 
-export VOLTA_HOME="$HOME/.volta"
-
 path=(
    "$HOMEBREW_PREFIX/bin"
    "$HOMEBREW_PREFIX/sbin"
-   "$HOMEBREW_PREFIX/opt/mysql@8.0/bin"
    "$HOMEBREW_PREFIX/opt/rustup/bin"
-   "$VOLTA_HOME/bin"
    "$HOME/.krew/bin"
    "$HOME/.cargo/bin"
-   "$HOME/.volta/bin"
    "$HOME/.luarocks/bin"
    "$HOME/go/bin"
    $path
@@ -99,8 +92,8 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' completer _expand _complete _correct _approximate
 
 # FZF-tab styling
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath'
 
 # Docker completion
 zstyle ':completion:*:*:docker:*' option-stacking yes
@@ -131,6 +124,8 @@ zinit wait'0' lucid for \
 zinit wait'0' lucid for \
    blockf \
    zsh-users/zsh-completions \
+   atload"_zsh_autosuggest_start" \
+   zsh-users/zsh-autosuggestions \
    Aloxaf/fzf-tab
 
 # Basic OMZ libs
