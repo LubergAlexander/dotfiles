@@ -3,9 +3,6 @@ alias brewall='brew update && brew upgrade && brew cleanup'
 alias vim='nvim'
 alias vimdiff='nvim -d'
 alias dockerrmall="docker rm -f `docker ps -a -q`"
-alias mux='tmuxinator'
-alias inops='mux start inops'
-alias pivo='mux start pivo'
 alias pip-upgrade="pip list --outdated | sed 's/(.*//g' | xargs -n1 pip install -U"
 
 update_neovim_venvs () {

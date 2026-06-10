@@ -39,7 +39,6 @@ tap "buo/cask-upgrade"
 # Shell & Navigation
 brew "zsh"
 brew "tmux"
-brew "tmuxinator"
 brew "fzf"
 brew "zoxide"
 brew "fd"
