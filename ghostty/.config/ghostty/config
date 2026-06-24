@@ -2,5 +2,8 @@ font-family = "BerkeleyMono Nerd Font"
 font-size = 17
 font-thicken = true
 
+# Use a terminfo entry that is broadly available on remote hosts.
+term = xterm-256color
+
 theme = light:gruvbox-light,dark:gruvbox-dark
 keybind = shift+enter=text:\x1b\r
