@@ -150,8 +150,3 @@ zinit wait'2' lucid for \
    OMZP::colored-man-pages \
    is-snippet ~/.aliases.zsh \
    is-snippet ~/.secrets.env
-
-
-# Optional LM Studio CLI, when installed on this machine.
-[[ ! -d "$HOME/.lmstudio/bin" ]] || path+=("$HOME/.lmstudio/bin")
-
