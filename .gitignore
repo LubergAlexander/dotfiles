@@ -9,6 +9,10 @@ tmux/.config/tmux/plugins
 *.bak
 .claude/
 
+# OMP memory stores, including repository-local agent directories.
+**/.omp/**/memories/
+**/.config/omp/**/memories/
+
 # OMP runtime data and credentials must never be committed.
 omp/.omp/**
 !omp/.omp/agent/

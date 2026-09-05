@@ -19,6 +19,10 @@ dev:
   autoqaConsent: granted
 lsp:
   diagnosticsOnEdit: true
+memory:
+  backend: local
+autolearn:
+  enabled: true
 task:
   enableLsp: true
   agentModelOverrides:

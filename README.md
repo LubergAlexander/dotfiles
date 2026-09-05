@@ -154,6 +154,13 @@ triggering Sidekick actions. `Ctrl+G` opens the prompt draft in `$VISUAL`/`$EDIT
 OMP returns LSP diagnostics after edits and allows delegated agents to use LSP.
 Automatic LSP formatting remains disabled.
 
+Project memory uses the `local` backend; `autolearn` enables lesson capture.
+OMP keeps each project's memory under `~/.omp/agent/memories/<encoded-project-path>/`
+(or its configured XDG state directory), outside the checkout. The repository's
+ignore rules also exclude OMP memory stores and runtime databases without ignoring
+ordinary `MEMORY.md` or `AGENTS.md` files. Use `/memory view` to inspect memory;
+session summaries are generated in the background from persisted, idle sessions.
+
 The Stow-managed OMP config routes work as follows:
 
 | Roles / agents | Model | Thinking |
