@@ -137,8 +137,8 @@ greedy_auto_updates = true
 fetch_head = true
 
 [commands]
-# Custom brew cu command with -f flag to force update casks marked as "latest"
-"Brew Cask Upgrade" = "brew cu -afy"
+# Casks are macOS-only; retain forced updates for casks marked as "latest".
+"Brew Cask Upgrade" = "if [ \"$(uname -s)\" = Darwin ]; then brew cu -afy; fi"
 
 
 [linux]

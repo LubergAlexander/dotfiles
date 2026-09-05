@@ -1,7 +1,7 @@
 -- Performance optimizations
 vim.loader.enable()
 vim.opt.updatetime = 250
-vim.g.python3_host_prog = '~/.virtualenvs/neovim3/bin/python'
+vim.g.python3_host_prog = vim.fn.expand('~/.virtualenvs/neovim3/bin/python')
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_node_provider = 0
@@ -73,7 +73,7 @@ require("lazy").setup({
         priority = 999,
         config = function()
             local dn = require('dark_notify')
-            dn.run({
+            dn.configure({
                 schemes = {
                     dark = { colorscheme = "gruvbox", background = "dark" },
                     light = { colorscheme = "gruvbox", background = "light" },
@@ -82,6 +82,11 @@ require("lazy").setup({
                     vim.cmd('colorscheme gruvbox')
                 end,
             })
+            if vim.uv.os_uname().sysname == "Darwin" then
+                dn.run()
+            else
+                dn.set_mode(vim.o.background)
+            end
             vim.keymap.set('n', '<leader>tb', function()
                 dn.toggle()
             end, { desc = "Toggle background dark/light" })
@@ -147,7 +152,6 @@ require("lazy").setup({
                     pyright = { disableOrganizeImports = true },
                     python = {
                         analysis = {
-                            ignore = { "*" }, -- Pyright linting off (use Ruff)
                             typeCheckingMode = "basic",
                             autoSearchPaths = true,
                             useLibraryCodeForTypes = true,
@@ -237,7 +241,7 @@ require("lazy").setup({
         },
     },
 
-    -- Treesitter for syntax highlighting and indent (main branch — Neovim 0.11+ rewrite)
+    -- Treesitter for syntax highlighting and indent (main branch — requires Neovim 0.12+)
     {
         "nvim-treesitter/nvim-treesitter",
         branch = "main",
@@ -260,7 +264,7 @@ require("lazy").setup({
                     local ft = args.match
                     local lang = vim.treesitter.language.get_lang(ft) or ft
                     local ok = pcall(vim.treesitter.start, buf, lang)
-                    if ok and not indent_disabled[ft] then
+                    if ok and not indent_disabled[lang] then
                         vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
                     end
                 end,
@@ -440,7 +444,7 @@ require("lazy").setup({
                                 if vim.fn.executable(f) == 1 then return f end
                             end
                             -- fallback to host python from your config
-                            return vim.g.python3_host_prog or "python3"
+                            return vim.g.python3_host_prog
                         end
                         dap.configurations.python = {
                             {
@@ -448,7 +452,7 @@ require("lazy").setup({
                                 request = "launch",
                                 name = "▶ Python: current file",
                                 program = "${file}",
-                                pythonPath = project_python,
+                                python = project_python,
                                 console = "integratedTerminal",
                             },
                             {
@@ -458,26 +462,15 @@ require("lazy").setup({
                                 module = "pytest",
                                 args = { "-q" },
                                 justMyCode = false,
-                                pythonPath = project_python,
+                                python = project_python,
                                 console = "integratedTerminal",
                             },
                         }
                     end,
 
-                    -- Go (dlv) - using recommended jobstart approach
-                    delve = function()
-                        dap.adapters.go = function(callback, _)
-                            local port = 38697
-                            -- Start Delve with DAP on the given port
-                            vim.fn.jobstart(
-                                { "dlv", "dap", "-l", "127.0.0.1:" .. port },
-                                { detach = true, stdout_buffered = true }
-                            )
-                            -- Give Delve a moment to start, then inform nvim-dap
-                            vim.defer_fn(function()
-                                callback({ type = "server", host = "127.0.0.1", port = port })
-                            end, 100)
-                        end
+                    -- Go (dlv): Mason's managed executable and dynamic port
+                    delve = function(config)
+                        dap.adapters.go = config.adapters
 
                         dap.configurations.go = {
                             {
@@ -485,13 +478,6 @@ require("lazy").setup({
                                 name = "Debug Current File",
                                 request = "launch",
                                 program = "${file}",
-                            },
-                            {
-                                type = "go",
-                                name = "Debug Nearest Test",
-                                request = "launch",
-                                mode = "test",
-                                program = "./${relativeFileDirname}",
                             },
                             {
                                 type = "go",
@@ -568,6 +554,11 @@ require("lazy").setup({
                 adapters = {
                     require("neotest-golang")({
                         go_test_args = { "-count=1", "-timeout=60s", "-race" },
+                        dap_mode = "manual",
+                        -- Fresh config: Neotest adds the selected test's program and filter.
+                        dap_manual_config = function()
+                            return { type = "go", request = "launch", name = "Debug nearest test", mode = "test" }
+                        end,
                     }),
                 },
                 output = {
@@ -643,11 +634,11 @@ vim.keymap.set('n', 'ss', ':split<CR>')
 vim.keymap.set('n', ';', ':')
 vim.keymap.set('v', ';', ':')
 
--- Trim trailing whitespace on save (for all files)
+-- Trim trailing whitespace on save, preserving Markdown hard line breaks
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*",
     callback = function()
-        if not vim.bo.modifiable then return end
+        if not vim.bo.modifiable or vim.bo.filetype == "markdown" then return end
         local save_cursor = vim.fn.getpos(".")
         vim.cmd([[ %s/\s\+$//e ]])
         vim.fn.setpos(".", save_cursor)

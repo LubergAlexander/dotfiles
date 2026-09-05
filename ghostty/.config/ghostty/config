@@ -2,8 +2,8 @@ font-family = "BerkeleyMono Nerd Font"
 font-size = 17
 font-thicken = true
 
-# Use a terminfo entry that is broadly available on remote hosts.
-term = xterm-256color
+# Preserve native capabilities; install xterm-ghostty terminfo on remote hosts.
+term = xterm-ghostty
 
 theme = light:gruvbox-light,dark:gruvbox-dark
 keybind = shift+enter=text:\x1b\r

@@ -1,15 +1,6 @@
-# Must be first lines of .zshrc
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
-typeset -g POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=false
-
-# Minimal p10k config for faster startup
-typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SEGMENT_SEPARATOR=
-typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=' '
-typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
-
-# Instant prompt initialization
+# Enable Powerlevel10k instant prompt near the top of .zshrc.
+# Interactive initialization must go above this block. Prompt settings live in
+# ~/.p10k.zsh, loaded with the theme below (including instant-prompt quiet mode).
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -38,8 +29,9 @@ export GIT_EDITOR="$EDITOR"
 # SSH-Agent
 # macOS: launchd already sets SSH_AUTH_SOCK per session — inherit it untouched.
 # tmux refreshes it on attach via its default update-environment list.
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
+if [[ "$OSTYPE" == "linux-gnu"* && -z "$SSH_AUTH_SOCK" &&
+      -n "$XDG_RUNTIME_DIR" && -S "$XDG_RUNTIME_DIR/ssh-agent.socket" ]]; then
+  export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 fi
 
 # FZF configuration
@@ -48,14 +40,14 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type directory --hidden --follow --exclude .git'
 
 # Path configuration
-if [[ -f "/opt/homebrew/bin/brew" ]]; then
- export HOMEBREW_PREFIX="/opt/homebrew";
+if [[ "$OSTYPE" == darwin* && -x /opt/homebrew/bin/brew ]]; then
+ export HOMEBREW_PREFIX="/opt/homebrew"
+elif [[ "$OSTYPE" == darwin* && -x /usr/local/bin/brew ]]; then
+ export HOMEBREW_PREFIX="/usr/local"
 fi
 
 path=(
-   "$HOMEBREW_PREFIX/bin"
-   "$HOMEBREW_PREFIX/sbin"
-   "$HOMEBREW_PREFIX/opt/rustup/bin"
+   "$HOME/.local/bin"
    "$HOME/.krew/bin"
    "$HOME/.cargo/bin"
    "$HOME/.luarocks/bin"
@@ -63,16 +55,21 @@ path=(
    $path
 )
 typeset -U path
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+  path=("$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/sbin" "$HOMEBREW_PREFIX/opt/rustup/bin" $path)
+fi
 
 # Add completions paths
 ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 [[ ! -d ${ZSH_CACHE_DIR}/completions ]] && mkdir -p ${ZSH_CACHE_DIR}/completions
 fpath=(
-   "$HOMEBREW_PREFIX/share/zsh/site-functions/"
    "$ZSH_CACHE_DIR/completions"
    $fpath
 )
 typeset -U fpath
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+  fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
+fi
 
 # Optimized completion initialization
 # Use the cached dump (-C) if it was refreshed within the last 24h
@@ -155,7 +152,6 @@ zinit wait'2' lucid for \
    is-snippet ~/.secrets.env
 
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/aluberg/.lmstudio/bin"
-# End of LM Studio CLI section
+# Optional LM Studio CLI, when installed on this machine.
+[[ ! -d "$HOME/.lmstudio/bin" ]] || path+=("$HOME/.lmstudio/bin")
 

@@ -1,13 +1,12 @@
 #!/usr/bin/env zsh
 
-# Close any open System Preferences to prevent overriding changes
-osascript -e 'tell application "System Preferences" to quit'
+if [[ "$OSTYPE" != darwin* ]]; then
+    print -u2 "This script only applies to macOS."
+    exit 1
+fi
 
-# Ask for administrator password upfront
-sudo -v
-
-# Keep-alive: update existing `sudo` time stamp until script has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+# Close System Settings to prevent it from overwriting these preferences.
+osascript -e 'tell application "System Settings" to quit'
 
 ###############################################################################
 # Key Repeat & Keyboard                                                         #
@@ -67,8 +66,10 @@ defaults write com.apple.finder _FXSortFoldersFirst -bool true
 # General UI/UX                                                                #
 ###############################################################################
 
-# Disable the "Are you sure you want to open this application?" dialog
-defaults write com.apple.LaunchServices LSQuarantine -bool false
+# Restore the platform's downloaded-application safety defaults.
+if defaults read com.apple.LaunchServices LSQuarantine >/dev/null 2>&1; then
+    defaults delete com.apple.LaunchServices LSQuarantine
+fi
 
 # Disable window animations
 defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
@@ -79,10 +80,12 @@ defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
 # Speed up Mission Control animations
 defaults write com.apple.dock expose-animation-duration -float 0.1
 
-# Disable disk image verification
-defaults write com.apple.frameworks.diskimages skip-verify -bool true
-defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
-defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
+# Remove legacy disk-image verification bypasses.
+for key in skip-verify skip-verify-locked skip-verify-remote; do
+    if defaults read com.apple.frameworks.diskimages "$key" >/dev/null 2>&1; then
+        defaults delete com.apple.frameworks.diskimages "$key"
+    fi
+done
 
 # Enable spring loading for directories
 defaults write NSGlobalDomain com.apple.springing.enabled -bool true
