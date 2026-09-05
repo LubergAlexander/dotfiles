@@ -375,11 +375,24 @@ require("lazy").setup({
         },
     },
 
-    -- Cursor Agent CLI in a managed terminal (sidekick wraps AI CLIs)
+    -- AI CLIs in persistent tmux-backed terminals
     {
         "folke/sidekick.nvim",
         opts = {
             nes = { enabled = false }, -- no Copilot LSP; CLI integration only
+            cli = {
+                mux = { backend = "tmux", enabled = true },
+                tools = {
+                    omp = {
+                        cmd = { "omp" },
+                        is_proc = "\\<omp\\>",
+                        keys = {
+                            prompt = false, -- let OMP cycle models with Ctrl+P
+                            stopinsert = false, -- let OMP queue follow-ups with Ctrl+Q
+                        },
+                    },
+                },
+            },
         },
         keys = {
             {
@@ -389,9 +402,25 @@ require("lazy").setup({
             },
             {
                 "<leader>cs",
-                function() require("sidekick.cli").send({ selection = true }) end,
+                function() require("sidekick.cli").send({ name = "cursor", msg = "{selection}" }) end,
                 mode = "v",
                 desc = "Send selection to Cursor Agent",
+            },
+            {
+                "<leader>oo",
+                function() require("sidekick.cli").toggle({ name = "omp", focus = true }) end,
+                desc = "Toggle OMP",
+            },
+            {
+                "<leader>of",
+                function() require("sidekick.cli").focus({ name = "omp" }) end,
+                desc = "Focus OMP",
+            },
+            {
+                "<leader>os",
+                function() require("sidekick.cli").send({ name = "omp", msg = "{selection}", focus = true }) end,
+                mode = "v",
+                desc = "Send selection to OMP",
             },
         },
     },

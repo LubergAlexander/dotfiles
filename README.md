@@ -133,6 +133,47 @@ from an initialized interactive Zsh: `zinit update "$HOME/.aliases.zsh"`. Then o
 a new shell so removed aliases disappear too. Local snippet loading/caching remains
 unchanged; do not refresh, move, or alter the untracked secrets file as part of setup.
 
+Neovim runs OMP and Cursor Agent through Sidekick in persistent tmux sessions.
+The leader key is Space:
+
+| Mapping | Action |
+| --- | --- |
+| `Space o o` | Toggle OMP and focus its terminal |
+| `Space o f` | Focus OMP without toggling it closed |
+| `Space o s` (visual mode) | Send the selection to OMP's draft without submitting |
+| `Space c c` | Toggle Cursor Agent |
+| `Space c s` (visual mode) | Send the selection specifically to Cursor Agent |
+
+Closing Neovim leaves the CLI running in tmux; opening it again from the same
+project and toggling OMP reconnects to that session. Quit the CLI inside its
+terminal when you want to stop it. In OMP's terminal-input mode, `Ctrl+P` and
+`Ctrl+Q` pass through to OMP for model cycling and queued follow-ups rather than
+triggering Sidekick actions. `Ctrl+G` opens the prompt draft in `$VISUAL`/`$EDITOR`
+(Neovim in this setup).
+
+OMP returns LSP diagnostics after edits and allows delegated agents to use LSP.
+Automatic LSP formatting remains disabled.
+
+The Stow-managed OMP config routes work as follows:
+
+| Roles / agents | Model | Thinking |
+| --- | --- | --- |
+| `default`, `slow`, `plan` | GPT-6 Astra | max |
+| `vision` | GPT-6 Astra | high |
+| `task` role/agent, `scout` agent | Grok 4.6 | medium |
+| `smol`, `tiny`, `commit` roles, `sonic` agent | Grok 4.6 | low |
+| `advisor` role, `reviewer` and `security-reviewer` agents | Claude Opus 5 | high |
+
+Both review agents reuse `@advisor`, but passive advice remains disabled by
+default. Use `/advisor on` or `/advisor off` to control it for the current session.
+Role-specific fallback chains use GPT-5.6 Sol through `openai-codex`, with
+max effort for main/planning, high for vision/review, medium for implementation,
+and low for lightweight roles. OMP returns to the primary model after its
+cooldown expires. Sol on the same Codex account may share GPT-6's quota limits.
+
+Start a new OMP process to load all settings after changing the config; toggling
+Sidekick only reconnects to an existing process.
+
 The optional Claude Code editor integration requires the official
 [Claude Code CLI](https://code.claude.com/docs/en/setup) and its own authentication;
 install it using the supported platform instructions before using those mappings.
