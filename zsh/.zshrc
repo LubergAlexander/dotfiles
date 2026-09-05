@@ -53,6 +53,8 @@ path=(
    "$HOME/.luarocks/bin"
    "$HOME/go/bin"
    $path
+   # Reuse Neovim's Mason servers when no earlier PATH entry supplies them.
+   "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/mason/bin"
 )
 typeset -U path
 if [[ -n "$HOMEBREW_PREFIX" ]]; then

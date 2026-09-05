@@ -8,3 +8,13 @@ nvim/.config/nvim/repos
 tmux/.config/tmux/plugins
 *.bak
 .claude/
+
+# OMP runtime data and credentials must never be committed.
+omp/.omp/**
+!omp/.omp/agent/
+!omp/.omp/agent/config.yml
+!omp/.omp/agent/lsp.yml
+omp/.config/omp/**
+!omp/.config/omp/agent/
+!omp/.config/omp/agent/config.yml
+!omp/.config/omp/agent/lsp.yml

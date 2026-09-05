@@ -1,0 +1,19 @@
+# OMP supplies each server's command, arguments, file types, and root markers.
+# Match Neovim's Go/Python preferences; executables resolve through PATH.
+servers:
+  gopls:
+    settings:
+      gopls:
+        analyses:
+          unusedparams: true
+          shadow: true
+        staticcheck: true
+        gofumpt: true
+  pyright:
+    settings:
+      python:
+        analysis:
+          typeCheckingMode: basic
+          autoSearchPaths: true
+          diagnosticMode: openFilesOnly
+          useLibraryCodeForTypes: true

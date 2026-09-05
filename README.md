@@ -73,9 +73,10 @@ provides `watch`. `ghostty-terminfo` provides `xterm-ghostty`, and `ncurses` pro
 clipboard/opening backends. `ttf-hack-nerd` is the free font fallback. These names
 are listed in the [official Arch package database](https://archlinux.org/packages/).
 
-`topgrade` is available separately in the [AUR](https://aur.archlinux.org/packages/topgrade),
-not in the official package list: review its PKGBUILD before building it with your
-preferred AUR workflow. Docker daemon setup, desktop sessions, and SSH-agent services
+`arch_aur_pkglist.txt` lists [AUR packages](https://aur.archlinux.org/) (`oh-my-pi-bin`
+and `topgrade`); review their PKGBUILDs and install with your preferred AUR helper,
+for example `yay -S --needed - < arch_aur_pkglist.txt`.
+Docker daemon setup, desktop sessions, and SSH-agent services
 are machine-specific; they are not enabled by Stow. The shell preserves an inherited
 SSH agent and only selects `$XDG_RUNTIME_DIR/ssh-agent.socket` when that socket exists.
 macOS appearance detection is not needed on Linux: `bat` defaults to `gruvbox-dark`
@@ -97,7 +98,7 @@ if [ -e "$HOME/.p10k.zsh" ] && [ ! -L "$HOME/.p10k.zsh" ]; then
 fi
 
 # Preview all package symlinks, resolve any other conflicts, then install them.
-stow --simulate --verbose --target="$HOME" --restow */
+stow --simulate --verbose --no-folding --target="$HOME" --restow */
 make all
 
 # Provision pynvim without activating a venv or deleting existing environments.
@@ -106,9 +107,10 @@ make python-host
 
 `make all` only restows every top-level package into `$HOME`, including Homebrew's
 Brewfile on either platform. It does **not** install OS packages, configure the login
-shell, provision Python, or apply macOS preferences. Stow may fold an entire directory
-into a symlink when no existing directory prevents it. `make delete` removes these
-managed symlinks, not installed packages or unrelated files.
+shell, provision Python, or apply macOS preferences. Stow runs with `--no-folding`
+so target directories remain real directories and application-generated files do
+not land in the repository through directory symlinks. `make delete` removes the
+managed file links, not installed packages or unrelated files.
 
 `make python-host` and the interactive `update_neovim_venvs` helper use the same
 provisioner: create only the missing `neovim3` environment using `uv`, then upgrade

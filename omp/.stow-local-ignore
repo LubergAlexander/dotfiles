@@ -1,0 +1,2 @@
+# OMP locks the resolved settings file beside its target in this package.
+.+\.lock

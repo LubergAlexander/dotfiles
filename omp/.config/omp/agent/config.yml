@@ -1,0 +1,11 @@
+modelRoles:
+  default: openai-codex/gpt-6-astra:max
+symbolPreset: nerd
+composer:
+  shape: rule
+theme:
+  dark: dark-gruvbox
+  light: light-gruvbox
+setupVersion: 2
+dev:
+  autoqaConsent: granted
