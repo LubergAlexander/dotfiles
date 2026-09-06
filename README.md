@@ -194,8 +194,13 @@ status bars use a continuous contrasting background: dark1 (`#3c3836`) in dark
 mode and light1 (`#ebdbb2`) in light mode.
 The tmux bar shows the session, windows, zoom state, and clock in filled powerline
 segments. Neovim's status line uses matching separators and mode-specific Gruvbox colors.
-Ghostty keeps Berkeley Mono at 17 points, with 12-point horizontal padding,
+Neovim keeps its command row below the status line so command entry remains
+visible above tmux.
+Ghostty keeps Berkeley Mono at 17 points, with 8-point horizontal padding,
 10-point vertical padding, 4% extra cell height, and font thickening disabled.
+Padding retains the canvas color and balances leftover cell space, keeping both
+status bars inset from the rounded macOS window corners. Padding geometry changes
+require a new Ghostty window or tab after reloading the config.
 
 Shell pickers use terminal-palette colors so they follow Ghostty's appearance:
 
