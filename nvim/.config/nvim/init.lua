@@ -40,7 +40,7 @@ require("lazy").setup({
         priority = 1000,
         config = function()
             require("gruvbox").setup({
-                contrast = "light",
+                contrast = "",
                 transparent_mode = false,
                 italic = {
                     strings = true,
@@ -105,7 +105,34 @@ require("lazy").setup({
             { "<leader>fr", "<cmd>FzfLua oldfiles<CR>",  desc = "Recent Files" },
         },
         config = function()
-            require("fzf-lua").setup({}) -- using default telescope-like behavior
+            require("fzf-lua").setup({
+                winopts = {
+                    height = 0.60,
+                    width = 0.80,
+                    row = 0.50,
+                    col = 0.50,
+                    border = "rounded",
+                    backdrop = false,
+                },
+                hls = {
+                    normal = "Normal",
+                    preview_normal = "Normal",
+                    border = "GruvboxGray",
+                    preview_border = "GruvboxGray",
+                },
+                fzf_opts = {
+                    ["--layout"] = "reverse",
+                    ["--info"] = "inline",
+                },
+                fzf_colors = {
+                    true,
+                    ["hl"] = { "fg", "GruvboxYellow" },
+                    ["hl+"] = { "fg", "GruvboxYellow" },
+                    ["prompt"] = { "fg", "GruvboxYellow" },
+                    ["pointer"] = { "fg", "GruvboxYellow" },
+                    ["marker"] = { "fg", "GruvboxYellow" },
+                },
+            })
         end,
     },
 
@@ -319,7 +346,45 @@ require("lazy").setup({
         event = "VeryLazy",
         dependencies = { "echasnovski/mini.icons" },
         config = function()
-            require("lualine").setup()
+            require("lualine").setup({
+                options = {
+                    component_separators = { left = "", right = "" },
+                    section_separators = { left = "", right = "" },
+                    theme = function()
+                        local palette = require("gruvbox").palette
+                        local light = vim.o.background == "light"
+                        local canvas_bg = light and palette.light0 or palette.dark0
+                        local bar_bg = light and palette.light1 or palette.dark1
+                        local fg = light and palette.dark1 or palette.light1
+                        local muted = light and palette.dark4 or palette.gray
+                        local accent = light and palette.faded_yellow or palette.bright_yellow
+                        local segment_bg = light and palette.light2 or palette.dark2
+                        local theme = {
+                            normal = {
+                                a = { fg = canvas_bg, bg = accent, gui = "bold" },
+                                b = { fg = fg, bg = segment_bg },
+                                c = { fg = fg, bg = bar_bg },
+                            },
+                            inactive = {
+                                a = { fg = muted, bg = segment_bg },
+                                b = { fg = muted, bg = segment_bg },
+                                c = { fg = muted, bg = bar_bg },
+                            },
+                        }
+                        for mode, color in pairs({
+                            insert = light and palette.faded_blue or palette.bright_blue,
+                            visual = light and palette.faded_orange or palette.bright_orange,
+                            replace = light and palette.faded_red or palette.bright_red,
+                            command = light and palette.faded_green or palette.bright_green,
+                            terminal = light and palette.faded_aqua or palette.bright_aqua,
+                        }) do
+                            theme[mode] = { a = { fg = canvas_bg, bg = color, gui = "bold" } }
+                        end
+                        return theme
+                    end,
+                },
+                sections = { lualine_x = { "filetype" } },
+            })
         end,
     },
 

@@ -18,8 +18,9 @@ package directory mirrors `$HOME`. Run the commands below from the repository ro
   Font as a free alternative; select `Hack Nerd Font` in Ghostty if desired.
 - Ghostty uses its native `xterm-ghostty` capabilities, and tmux uses
   `tmux-256color`. Install the matching terminfo on remote hosts too rather than
-  overriding `TERM` to impersonate another terminal. tmux 3.7+ follows terminal
-  light/dark appearance; older versions use the static dark theme.
+  overriding `TERM` to impersonate another terminal. tmux 3.3+ is required for
+  rounded popups; 3.7+ follows terminal light/dark appearance. Earlier supported
+  versions use the static dark theme.
 
 # Fresh machine setup (macOS)
 
@@ -185,6 +186,34 @@ The optional Claude Code editor integration requires the official
 [Claude Code CLI](https://code.claude.com/docs/en/setup) and its own authentication;
 install it using the supported platform instructions before using those mappings.
 LM Studio is optional; its CLI path is included only when `$HOME/.lmstudio/bin` exists.
+
+# Terminal appearance and pickers
+
+Ghostty and Neovim keep the standard Gruvbox light/dark canvas backgrounds. Both
+status bars use a continuous contrasting background: dark1 (`#3c3836`) in dark
+mode and light1 (`#ebdbb2`) in light mode.
+The tmux bar shows the session, windows, zoom state, and clock in filled powerline
+segments. Neovim's status line uses matching separators and mode-specific Gruvbox colors.
+Ghostty keeps Berkeley Mono at 17 points, with 12-point horizontal padding,
+10-point vertical padding, 4% extra cell height, and font thickening disabled.
+
+Shell pickers use terminal-palette colors so they follow Ghostty's appearance:
+
+- `Ctrl+T`: files with a numbered, syntax-highlighted preview of the first 200 lines.
+- `Ctrl+R`: history, without a file preview.
+- `Alt+C`: directories with an `eza` contents preview.
+- Tab completion stays inline and adapts to the number of candidates.
+
+Shell widgets use centered 80% × 60% popups inside tmux and height-limited pickers
+outside it. Neovim's fzf-lua uses a rounded native float at the same proportions;
+extrakto uses tmux's rounded popup. Keep `FZF_DEFAULT_OPTS` appearance-only:
+extrakto inherits it, while preview commands and borders belong in widget-specific
+options. `fzf-tab` reserves two extra rows for its rounded border.
+
+To apply edits, reload Ghostty with `Cmd+Shift+,`, open a new shell, and restart
+Neovim. In an existing tmux session, reload with prefix then `r` (the prefix is
+backtick), then detach and reattach from the new shell to refresh the shared
+`FZF_DEFAULT_OPTS` environment.
 
 # Machine-specific Git identity
 

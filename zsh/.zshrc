@@ -35,9 +35,16 @@ if [[ "$OSTYPE" == "linux-gnu"* && -z "$SSH_AUTH_SOCK" &&
 fi
 
 # FZF configuration
+# Appearance-only defaults (no preview commands or popup geometry) so embedded
+# pickers keep their own layout. Shell widgets use fzf-tmux popups inside tmux.
 export FZF_DEFAULT_COMMAND='fd --type file --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type directory --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS='--layout=reverse --info=inline --color=base16,hl:11,hl+:11,fg+:15,bg+:-1,pointer:11,marker:11,prompt:11,spinner:11,info:8,border:8,gutter:-1,header:8,label:8'
+export FZF_TMUX_OPTS='-p 80%,60%'
+export FZF_CTRL_T_OPTS="--border=rounded --preview 'bat --style=numbers --color=always --theme=ansi --paging=never --line-range=:200 -- {}'"
+export FZF_CTRL_R_OPTS='--border=rounded'
+export FZF_ALT_C_OPTS="--border=rounded --preview 'eza -1 --color=always -- {}'"
 
 # Path configuration
 if [[ "$OSTYPE" == darwin* && -x /opt/homebrew/bin/brew ]]; then
@@ -90,9 +97,14 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' completer _expand _complete _correct _approximate
 
-# FZF-tab styling
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath'
+# FZF-tab styling: reuse appearance flags, keep completion inline/adaptive.
+# Completion retains its adaptive height; the shell widgets own popup geometry.
+zstyle ':fzf-tab:*' use-fzf-default-opts no
+zstyle ':fzf-tab:*' fzf-flags ${(z)FZF_DEFAULT_OPTS} --border=rounded
+# Reserve the two extra rows consumed by the rounded border.
+zstyle ':fzf-tab:*' fzf-pad 4
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always -- "$realpath"'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always -- "$realpath"'
 
 # Docker completion
 zstyle ':completion:*:*:docker:*' option-stacking yes
