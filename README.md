@@ -208,7 +208,8 @@ The Stow-managed OMP config routes work as follows:
 
 | Roles / agents | Model | Thinking |
 | --- | --- | --- |
-| `default`, `slow`, `plan` | GPT-6 Astra | max |
+| `default` | GPT-6 Astra | auto |
+| `slow`, `plan` | GPT-6 Astra | max |
 | `vision` | GPT-6 Astra | high |
 | `task` role/agent, `scout` agent | Grok 4.6 | medium |
 | `smol`, `tiny`, `commit` roles, `sonic` agent | Grok 4.6 | low |
@@ -218,15 +219,21 @@ The Stow-managed OMP config routes work as follows:
 Both review agents reuse `@advisor`, but passive advice remains disabled by
 default. Use `/advisor on` or `/advisor off` to control it for the current session.
 Role-specific fallback chains use GPT-5.6 Sol through `openai-codex`, with
-max effort for main/planning, high for vision/review, medium for implementation,
-and low for lightweight roles. OMP returns to the primary model after its
-cooldown expires. Sol on the same Codex account may share GPT-6's quota limits.
+automatic effort for the main session, max for planning, high for vision/review,
+medium for implementation, and low for lightweight roles. OMP returns to the
+primary model after its cooldown expires. Sol on the same Codex account may share
+GPT-6's quota limits.
 
-Typed judgments use TypeSafe JEV with an explicit empty fallback chain, so they
-cannot silently switch to a chat model. Authenticate on each machine with
-`/login typesafe`; credentials stay outside these dotfiles. JEV handles `judge()`
-and internal typed decisions, not ordinary chat or the review agents. The fixed
-thinking levels above do not invoke the `auto` difficulty classifier.
+The main session uses `defaultThinkingLevel: auto`; its primary and fallback
+model selectors intentionally omit fixed effort suffixes. Other roles retain the
+explicit thinking levels above.
+
+Typed judgments try TypeSafe JEV first, then the configured `@tiny` role if JEV
+is unavailable, including when credentials are missing. Authenticate on each
+machine with `/login typesafe`; credentials stay outside these dotfiles. JEV
+handles `judge()` and internal typed decisions, not ordinary chat or the review
+agents. The retired `providers.judgmentProvider` setting is not used; routing is
+controlled by `modelRoles.judge` and `retry.fallbackChains.judge`.
 
 Start a new OMP process to load all settings after changing the config; toggling
 Sidekick only reconnects to an existing process.
