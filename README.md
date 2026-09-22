@@ -211,8 +211,8 @@ The Stow-managed OMP config routes work as follows:
 | `default` | GPT-6 Astra | auto |
 | `slow`, `plan` | GPT-6 Astra | max |
 | `vision` | GPT-6 Astra | high |
-| `task` role/agent, `scout` agent | Grok 4.6 | medium |
-| `smol`, `tiny`, `commit` roles, `sonic` agent | Grok 4.6 | low |
+| `task` role/agent, `scout` agent | Grok 4.7 | medium |
+| `smol`, `tiny`, `commit` roles, `sonic` agent | Grok 4.7 | low |
 | `advisor` role, `reviewer` and `security-reviewer` agents | Claude Opus 5 | high |
 | `judge` | TypeSafe JEV (`jev-latest`) | — |
 

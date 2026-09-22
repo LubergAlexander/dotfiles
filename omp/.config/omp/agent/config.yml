@@ -4,10 +4,10 @@ modelRoles:
   slow: openai-codex/gpt-6-astra:max
   plan: openai-codex/gpt-6-astra:max
   vision: openai-codex/gpt-6-astra:high
-  task: xai-oauth/grok-4.6:medium
-  smol: xai-oauth/grok-4.6:low
-  tiny: xai-oauth/grok-4.6:low
-  commit: xai-oauth/grok-4.6:low
+  task: xai-oauth/grok-4.7:medium
+  smol: xai-oauth/grok-4.7:low
+  tiny: xai-oauth/grok-4.7:low
+  commit: xai-oauth/grok-4.7:low
   advisor: anthropic/claude-opus-5:high
   judge: typesafe/jev-latest
 symbolPreset: nerd
