@@ -151,6 +151,53 @@ require("lazy").setup({
         },
     },
 
+    -- Install formatter CLIs; language servers and debug adapters keep their bridges.
+    {
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        dependencies = { "mason-org/mason.nvim" },
+        opts = {
+            ensure_installed = { "goimports", "gofumpt", "shfmt", "stylua", "prettier", "taplo" },
+            integrations = {
+                ["mason-lspconfig"] = false,
+                ["mason-null-ls"] = false,
+                ["mason-nvim-dap"] = false,
+            },
+        },
+    },
+
+    -- One synchronous save pipeline, independent of LSP attach/restart events.
+    {
+        "stevearc/conform.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        cmd = "ConformInfo",
+        dependencies = { "mason-org/mason.nvim" },
+        keys = {
+            {
+                "<leader>F",
+                function() require("conform").format({ async = true }) end,
+                desc = "Format buffer",
+            },
+        },
+        opts = {
+            default_format_opts = { lsp_format = "fallback" },
+            format_on_save = { timeout_ms = 3000 },
+            formatters_by_ft = {
+                go = { "goimports", "gofumpt" },
+                python = { "ruff_organize_imports", "ruff_format" },
+                sh = { "shfmt" },
+                bash = { "shfmt" },
+                lua = { "stylua" },
+                yaml = { "prettier" },
+                json = { "prettier" },
+                jsonc = { "prettier" },
+                markdown = { "prettier" },
+                toml = { "taplo" },
+                -- Includes Go module/workspace files via gopls; Zsh is not Bash.
+                ["_"] = { "trim_whitespace", lsp_format = "first" },
+            },
+        },
+    },
+
     -- LSP configurations (Neovim 0.11+ native API)
     {
         "neovim/nvim-lspconfig",
@@ -227,28 +274,6 @@ require("lazy").setup({
                     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
                     vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
                     vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
-                    vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format({ async = true }) end, opts)
-
-                    -- Format on save if supported by this server
-                    if client:supports_method('textDocument/formatting') then -- use colon method
-                        vim.api.nvim_create_autocmd('BufWritePre', {
-                            buffer = bufnr,
-                            callback = function()
-                                vim.lsp.buf.format({ async = false })
-                            end
-                        })
-                    end
-                end
-            })
-
-            -- Go: organize imports on save
-            vim.api.nvim_create_autocmd("BufWritePre", {
-                pattern = "*.go",
-                callback = function()
-                    vim.lsp.buf.code_action({
-                        context = { only = { "source.organizeImports" } },
-                        apply = true
-                    })
                 end
             })
         end,
@@ -630,7 +655,6 @@ require("lazy").setup({
         dependencies = {
             "nvim-neotest/nvim-nio",
             "nvim-lua/plenary.nvim",
-            "antoinemadec/FixCursorHold.nvim",
             "nvim-treesitter/nvim-treesitter",
             "fredrikaverpil/neotest-golang",
         },
@@ -727,14 +751,3 @@ vim.keymap.set('n', 'vv', ':vsplit<CR>')
 vim.keymap.set('n', 'ss', ':split<CR>')
 vim.keymap.set('n', ';', ':')
 vim.keymap.set('v', ';', ':')
-
--- Trim trailing whitespace on save, preserving Markdown hard line breaks
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
-    callback = function()
-        if not vim.bo.modifiable or vim.bo.filetype == "markdown" then return end
-        local save_cursor = vim.fn.getpos(".")
-        vim.cmd([[ %s/\s\+$//e ]])
-        vim.fn.setpos(".", save_cursor)
-    end,
-})

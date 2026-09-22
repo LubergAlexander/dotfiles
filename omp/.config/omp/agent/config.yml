@@ -1,5 +1,6 @@
+defaultThinkingLevel: auto
 modelRoles:
-  default: openai-codex/gpt-6-astra:max
+  default: openai-codex/gpt-6-astra
   slow: openai-codex/gpt-6-astra:max
   plan: openai-codex/gpt-6-astra:max
   vision: openai-codex/gpt-6-astra:high
@@ -8,6 +9,7 @@ modelRoles:
   tiny: xai-oauth/grok-4.6:low
   commit: xai-oauth/grok-4.6:low
   advisor: anthropic/claude-opus-5:high
+  judge: typesafe/jev-latest
 symbolPreset: nerd
 composer:
   shape: rule
@@ -36,7 +38,7 @@ retry:
   fallbackRevertPolicy: cooldown-expiry
   fallbackChains:
     default:
-      - openai-codex/gpt-5.6-sol:max
+      - openai-codex/gpt-5.6-sol
     slow:
       - openai-codex/gpt-5.6-sol:max
     plan:
@@ -53,3 +55,5 @@ retry:
       - openai-codex/gpt-5.6-sol:low
     advisor:
       - openai-codex/gpt-5.6-sol:high
+    judge:
+      - "@tiny"
