@@ -8,6 +8,7 @@ modelRoles:
   tiny: xai-oauth/grok-4.6:low
   commit: xai-oauth/grok-4.6:low
   advisor: anthropic/claude-opus-5:high
+  judge: typesafe/jev-latest
 symbolPreset: nerd
 composer:
   shape: rule
@@ -53,3 +54,4 @@ retry:
       - openai-codex/gpt-5.6-sol:low
     advisor:
       - openai-codex/gpt-5.6-sol:high
+    judge: []

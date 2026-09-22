@@ -7,7 +7,7 @@ package directory mirrors `$HOME`. Run the commands below from the repository ro
 # Prerequisites
 
 - **Neovim 0.12 or newer**, Git, a C compiler, Go, Node.js/npm, `tree-sitter-cli`,
-  and `uv`. Mason installs the configured language servers and debug adapters;
+  and `uv`. Mason installs the configured servers, formatters, and debug adapters;
   it needs these language runtimes and archive tools, not just Neovim.
 - The Neovim Python provider is explicitly provisioned at
   `~/.virtualenvs/neovim3/bin/python`; a system `pynvim` package is not a substitute.
@@ -134,6 +134,48 @@ from an initialized interactive Zsh: `zinit update "$HOME/.aliases.zsh"`. Then o
 a new shell so removed aliases disappear too. Local snippet loading/caching remains
 unchanged; do not refresh, move, or alter the untracked secrets file as part of setup.
 
+# Neovim formatting
+
+Conform owns format-on-save and completes each pipeline synchronously before the
+file is written, with a three-second timeout. LSP attachment and restarts do not
+add more save handlers.
+
+| Filetype | Pipeline |
+| --- | --- |
+| Go | `goimports` → `gofumpt` |
+| Python | Ruff import organization → Ruff formatting |
+| Bash / sh | `shfmt` |
+| Lua | StyLua |
+| YAML, including Compose, GitLab CI, and Helm values | Prettier |
+| JSON / JSONC | Prettier |
+| Markdown | Prettier, preserving hard line breaks |
+| TOML | Taplo |
+| Other filetypes | Available LSP formatter → trailing-whitespace trimming |
+
+The fallback covers Go module/workspace files through gopls. Without an LSP
+formatter, Zsh and Vimscript only have trailing whitespace removed; Bash's
+formatter is deliberately not applied to Zsh syntax. Formatters use their normal
+project configuration files, and Prettier prefers a project-local installation.
+Python import organization does not enable unrelated Ruff lint fixes.
+
+`Space F` formats the current buffer in normal mode, even without an attached
+LSP. `:ConformInfo` shows the selected formatters, availability, and error log.
+
+Mason Tool Installer installs missing `goimports`, `gofumpt`, `shfmt`, `stylua`,
+`prettier`, and `taplo` binaries on startup; Ruff is already provisioned by the
+LSP bridge. Allow installation to finish on a fresh machine, or run
+`:MasonToolsInstallSync` to wait explicitly. Existing tools are not automatically
+upgraded on each startup. Avoid `:MasonToolsClean`: this installer's list contains
+only formatter tools, while the other Mason bridges manage LSP and DAP packages.
+
+Restart Neovim after deploying configuration changes; sourcing the whole config
+into an existing process is not the reload path.
+
+Formatting errors or timeouts are reported but do not block the write; inspect
+`:ConformInfo` if a file could not be formatted.
+
+# Neovim AI integration
+
 Neovim runs OMP and Cursor Agent through Sidekick in persistent tmux sessions.
 The leader key is Space:
 
@@ -171,6 +213,7 @@ The Stow-managed OMP config routes work as follows:
 | `task` role/agent, `scout` agent | Grok 4.6 | medium |
 | `smol`, `tiny`, `commit` roles, `sonic` agent | Grok 4.6 | low |
 | `advisor` role, `reviewer` and `security-reviewer` agents | Claude Opus 5 | high |
+| `judge` | TypeSafe JEV (`jev-latest`) | — |
 
 Both review agents reuse `@advisor`, but passive advice remains disabled by
 default. Use `/advisor on` or `/advisor off` to control it for the current session.
@@ -178,6 +221,12 @@ Role-specific fallback chains use GPT-5.6 Sol through `openai-codex`, with
 max effort for main/planning, high for vision/review, medium for implementation,
 and low for lightweight roles. OMP returns to the primary model after its
 cooldown expires. Sol on the same Codex account may share GPT-6's quota limits.
+
+Typed judgments use TypeSafe JEV with an explicit empty fallback chain, so they
+cannot silently switch to a chat model. Authenticate on each machine with
+`/login typesafe`; credentials stay outside these dotfiles. JEV handles `judge()`
+and internal typed decisions, not ordinary chat or the review agents. The fixed
+thinking levels above do not invoke the `auto` difficulty classifier.
 
 Start a new OMP process to load all settings after changing the config; toggling
 Sidekick only reconnects to an existing process.
