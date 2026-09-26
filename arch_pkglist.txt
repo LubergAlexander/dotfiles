@@ -44,6 +44,7 @@ krew
 kind
 azure-cli
 pv
+syncthing
 git-lfs
 direnv
 ghostty

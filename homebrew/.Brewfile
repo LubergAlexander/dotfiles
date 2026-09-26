@@ -34,6 +34,7 @@ brew "topgrade"
 brew "stow"
 brew "bat"
 brew "pv"
+brew "syncthing", restart_service: :changed
 tap "teamookla/speedtest"
 brew "teamookla/speedtest/speedtest"
 tap "buo/cask-upgrade"
