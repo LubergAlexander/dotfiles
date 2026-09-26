@@ -45,6 +45,8 @@ kind
 azure-cli
 pv
 syncthing
+nmap
+mtr
 git-lfs
 direnv
 ghostty

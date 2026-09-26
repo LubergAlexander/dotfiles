@@ -35,6 +35,8 @@ brew "stow"
 brew "bat"
 brew "pv"
 brew "syncthing", restart_service: :changed
+brew "nmap"
+brew "mtr"
 tap "teamookla/speedtest"
 brew "teamookla/speedtest/speedtest"
 tap "buo/cask-upgrade"
