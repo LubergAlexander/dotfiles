@@ -44,8 +44,8 @@
   // Appearance
   "theme": {
     "mode": "system",
-    "light": "Gruvbox Light",
-    "dark": "Gruvbox Dark"
+    "light": "Gruvbox Light Soft",
+    "dark": "Gruvbox Dark Soft"
   },
   "buffer_font_family": "BerkeleyMono Nerd Font",
   "buffer_font_fallbacks": ["Hack Nerd Font Mono"],
