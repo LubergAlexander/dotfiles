@@ -446,11 +446,43 @@ require("lazy").setup({
         },
     },
 
-    -- Zen mode: centered 120-col float with dimmed surroundings (Zed: space z)
+    -- Zen mode (Zed: space z): opaque canvas, bare 100-col text column, no gutter,
+    -- diagnostics, hints, indent guides, statusline, or tmux bar. Restored on exit.
     {
         "folke/snacks.nvim",
         keys = {
             { "<leader>z", function() require("snacks").zen() end, desc = "Toggle zen mode" },
+        },
+        opts = {
+            zen = {
+                toggles = { dim = false, git_signs = false, diagnostics = false, inlay_hints = false },
+                show = { statusline = false, tabline = false },
+                win = {
+                    width = 100,
+                    -- Opaque Normal-colored backdrop hides the original window behind the float.
+                    backdrop = { transparent = false, blend = 99 },
+                    wo = {
+                        number = false,
+                        relativenumber = false,
+                        signcolumn = "no",
+                        foldcolumn = "0",
+                        statuscolumn = "",
+                        cursorline = false,
+                        colorcolumn = "",
+                        list = false,
+                    },
+                },
+                on_open = function()
+                    vim.g.zen_ruler, vim.o.ruler = vim.o.ruler, false
+                    if vim.fn.exists(":IBLDisable") == 2 then vim.cmd("IBLDisable") end
+                    if vim.env.TMUX then vim.system({ "tmux", "set", "status", "off" }) end
+                end,
+                on_close = function()
+                    vim.o.ruler = vim.g.zen_ruler ~= false
+                    if vim.fn.exists(":IBLEnable") == 2 then vim.cmd("IBLEnable") end
+                    if vim.env.TMUX then vim.system({ "tmux", "set", "-u", "status" }) end
+                end,
+            },
         },
     },
 
