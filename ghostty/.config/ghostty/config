@@ -1,4 +1,6 @@
+# Berkeley Mono is licensed and installed manually; Hack (Brewfile) covers its absence.
 font-family = "BerkeleyMono Nerd Font"
+font-family = "Hack Nerd Font Mono"
 font-size = 17
 font-thicken = false
 adjust-cell-height = 4%
