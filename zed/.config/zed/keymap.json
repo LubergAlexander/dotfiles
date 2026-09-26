@@ -1,0 +1,52 @@
+// Mirrors nvim/.config/nvim/init.lua mappings (leader = space).
+[
+  {
+    "context": "Editor && vim_mode == normal && !menu",
+    "bindings": {
+      // fzf-lua equivalents
+      "space f f": "file_finder::Toggle",
+      "space f g": "pane::DeploySearch",
+      "space f b": "tab_switcher::Toggle",
+      // Buffers / splits
+      "space w": "pane::CloseActiveItem",
+      "shift-tab": "pane::ActivateNextItem",
+      "v v": "pane::SplitRight",
+      "s s": "pane::SplitDown",
+      ";": "command_palette::Toggle",
+      // LSP / diagnostics / format
+      "space e": "editor::Hover",
+      "space q": "diagnostics::Deploy",
+      "space shift-f": "editor::Format",
+      // gitsigns equivalents
+      "] h": "editor::GoToHunk",
+      "[ h": "editor::GoToPreviousHunk",
+      "space h p": "editor::ToggleSelectedDiffHunks",
+      "space h s": "git::ToggleStaged",
+      "space h r": "git::Restore",
+      "space h b": "git::Blame",
+      "space h d": "git::Diff",
+      // Tests / agent
+      "space t n": "editor::SpawnNearestTask",
+      "space a c": "agent::ToggleFocus"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == visual && !menu",
+    "bindings": {
+      "shift-j": "editor::MoveLineDown",
+      "shift-k": "editor::MoveLineUp",
+      ";": "command_palette::Toggle"
+    }
+  },
+  {
+    // vim-tmux-navigator equivalent: Ctrl-h/j/k/l between panes and docks
+    "context": "(Editor && vim_mode == normal) || ProjectPanel || Dock",
+    "bindings": {
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "f2": "workspace::ToggleLeftDock"
+    }
+  }
+]

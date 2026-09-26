@@ -15,7 +15,8 @@ package directory mirrors `$HOME`. Run the commands below from the repository ro
   at size 17. Obtain Berkeley Mono from [its publisher](https://usgraphics.com/products/berkeley-mono)
   and install your licensed, appropriately patched copy manually. No proprietary
   font is downloaded by this repository. Homebrew and Arch lists include Hack Nerd
-  Font as a free alternative; select `Hack Nerd Font` in Ghostty if desired.
+  Font as a free alternative; Ghostty and Zed fall back to `Hack Nerd Font Mono`
+  automatically when Berkeley Mono is absent.
 - Ghostty uses its native `xterm-ghostty` capabilities, and tmux uses
   `tmux-256color`. Install the matching terminfo on remote hosts too rather than
   overriding `TERM` to impersonate another terminal. tmux 3.3+ is required for
@@ -275,6 +276,20 @@ To apply edits, reload Ghostty with `Cmd+Shift+,`, open a new shell, and restart
 Neovim. In an existing tmux session, reload with prefix then `r` (the prefix is
 backtick), then detach and reattach from the new shell to refresh the shared
 `FZF_DEFAULT_OPTS` environment.
+
+# Zed
+
+`zed/.config/zed/` tracks `settings.json` and `keymap.json`; the prompt-library
+database and `themes/` stay machine-local. The config mirrors the terminal setup:
+vim mode, Gruvbox following macOS appearance, Berkeley Mono with the Hack fallback,
+format on save (goimports-style organize imports for Go, Ruff for Python), no
+inline edit predictions, and hidden chrome (no minimap, scrollbar, breadcrumbs,
+toolbar actions, or panel buttons). Panels open from their key bindings or the
+command palette. Space-leader bindings follow Neovim: `space f f/g/b` files, grep,
+and open tabs; `space h p/s/r/b/d` hunk preview, stage, restore, blame, and diff;
+`]h`/`[h` hunks; `vv`/`ss` splits; `;` command palette; `Ctrl+H/J/K/L` between
+panes and docks; `F2` project panel. Zed applies edits to either file immediately.
+Changes made through Zed's settings UI write into the tracked file.
 
 # Machine-specific Git identity
 

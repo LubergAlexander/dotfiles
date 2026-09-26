@@ -1,0 +1,103 @@
+// Minimal Zed that mirrors the Neovim/Ghostty setup: vim mode, Gruvbox following
+// macOS appearance, Berkeley Mono (Hack fallback), and chrome hidden until needed.
+{
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+    "anthropic_retention": false
+  },
+  "session": {
+    "trust_all_worktrees": true
+  },
+
+  // Editing model
+  "vim_mode": true,
+  "which_key": { "enabled": true },
+  "relative_line_numbers": "enabled",
+  "vertical_scroll_margin": 8,
+  "cursor_blink": false,
+  "tab_size": 4,
+  "soft_wrap": "none",
+  "show_whitespaces": "selection",
+
+  // Appearance
+  "theme": {
+    "mode": "system",
+    "light": "Gruvbox Light",
+    "dark": "Gruvbox Dark"
+  },
+  "buffer_font_family": "BerkeleyMono Nerd Font",
+  "buffer_font_fallbacks": ["Hack Nerd Font Mono"],
+  "buffer_font_size": 15,
+  "ui_font_size": 16,
+  "terminal": {
+    "font_family": "BerkeleyMono Nerd Font",
+    "font_fallbacks": ["Hack Nerd Font Mono"],
+    "button": false,
+    "toolbar": { "breadcrumbs": false }
+  },
+
+  // Minimal chrome: no minimap/scrollbar/breadcrumbs, panels behind keys
+  "minimap": { "show": "never" },
+  "scrollbar": { "show": "never" },
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false,
+    "selections_menu": false,
+    "agent_review": false,
+    "code_actions": false
+  },
+  "tab_bar": { "show_nav_history_buttons": false, "show_tab_bar_buttons": false },
+  "tabs": { "file_icons": true, "git_status": true, "show_diagnostics": "errors" },
+  "title_bar": {
+    "show_onboarding_banner": false,
+    "show_user_picture": false,
+    "show_sign_in": false,
+    "show_menus": false
+  },
+  "gutter": { "folds": false, "runnables": false, "breakpoints": false },
+  "indent_guides": { "enabled": true, "coloring": "fixed" },
+  "git": { "inline_blame": { "enabled": false } },
+  "project_panel": { "button": false, "dock": "left", "hide_gitignore": false },
+  "outline_panel": { "button": false },
+  "collaboration_panel": { "button": false },
+  "git_panel": { "button": false },
+  "debugger": { "button": false },
+  "diagnostics": { "button": false },
+  "search": { "button": false },
+
+  // AI: agents via ACP, no inline edit predictions (matches Neovim)
+  "agent_servers": {
+    "claude-acp": { "type": "registry" },
+    "cursor": { "type": "registry" }
+  },
+  "edit_predictions": { "provider": "none" },
+
+  // Formatting mirrors conform.nvim: format on save, trim whitespace
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "languages": {
+    "Go": {
+      "code_actions_on_format": { "source.organizeImports": true }
+    },
+    "Python": {
+      "language_servers": ["basedpyright", "ruff", "!pyright", "!pylsp"],
+      "formatter": { "language_server": { "name": "ruff" } },
+      "code_actions_on_format": { "source.organizeImports.ruff": true }
+    },
+    "Shell Script": { "tab_size": 4 },
+    "YAML": { "tab_size": 2 },
+    "JSON": { "tab_size": 2 },
+    "Markdown": { "soft_wrap": "editor_width" }
+  },
+  "lsp": {
+    "gopls": {
+      "initialization_options": {
+        "gofumpt": true,
+        "staticcheck": true,
+        "analyses": { "unusedparams": true, "shadow": true }
+      }
+    }
+  }
+}
