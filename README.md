@@ -300,6 +300,13 @@ breakpoint, `F10`/`F11`/`Shift+F11` step, `space d x` stop, `space d u` panel).
 its adapters on first use. Put project-specific tasks and scenarios in
 `<project>/.zed/tasks.json` and `.zed/debug.json`. Zed applies edits immediately.
 
+# Yazi
+
+`yazi/.config/yazi/yazi.toml` only overrides defaults: columns at 1:3:4
+(parent, current, preview) so the preview gets half the width, image previews up to
+1600×1600 px, and wrapped text previews. Image previews inside tmux rely on
+`allow-passthrough on`, which `tmux.conf` sets.
+
 # Machine-specific Git identity
 
 Create or edit `~/.gitconfig.local` without overwriting existing machine settings:

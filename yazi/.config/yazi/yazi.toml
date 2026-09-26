@@ -1,0 +1,11 @@
+# Only overrides; yazi merges these onto its built-in defaults.
+
+[mgr]
+# parent : current : preview. Default [1, 4, 3] leaves the preview cramped.
+ratio = [1, 3, 4]
+
+[preview]
+# Default 600x900 caps images well below a Retina-width preview column.
+max_width  = 1600
+max_height = 1600
+wrap       = "yes"
