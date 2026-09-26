@@ -279,16 +279,26 @@ backtick), then detach and reattach from the new shell to refresh the shared
 
 # Zed
 
-`zed/.config/zed/` tracks `settings.json` and `keymap.json`; the prompt-library
-database and `themes/` stay machine-local. The config mirrors the terminal setup:
-vim mode, Gruvbox following macOS appearance, Berkeley Mono with the Hack fallback,
-format on save (goimports-style organize imports for Go, Ruff for Python), no
-inline edit predictions, and hidden chrome (no minimap, scrollbar, breadcrumbs,
-toolbar actions, or panel buttons). Panels open from their key bindings or the
-command palette. Space-leader bindings follow Neovim: `space f f/g/b` files, grep,
-and open tabs; `space h p/s/r/b/d` hunk preview, stage, restore, blame, and diff;
-`]h`/`[h` hunks; `vv`/`ss` splits; `;` command palette; `Ctrl+H/J/K/L` between
-panes and docks; `F2` project panel. Zed applies edits to either file immediately.
+`zed/.config/zed/` tracks `settings.json`, `keymap.json`, and `debug.json`; the
+prompt-library database and `themes/` stay machine-local. The config mirrors the
+terminal setup: vim mode, Gruvbox following macOS appearance, Berkeley Mono 17 with
+the Hack fallback and Ghostty's line height, ligatures, format on save
+(goimports-style organize imports for Go, Ruff for Python), no inline edit
+predictions, and hidden chrome (no minimap, scrollbar, breadcrumbs, toolbar actions,
+or panel buttons). Yanks reach the macOS clipboard; deletes stay in vim registers.
+Inlay hints are on, and blame appears after the cursor rests on a line for 600 ms.
+Panels open from their key bindings or the command palette. Space-leader bindings
+follow Neovim: `space f f/g/b` files, grep, and open tabs; `space h p/s/r/b/d` hunk
+preview, stage, restore, blame, and diff; `]h`/`[h` hunks; `space g g` git panel;
+`space z` zen (centered layout, docks closed; Neovim uses the same key);
+`space t i` inlay hints; `vv`/`ss` splits; `;` command palette; `Ctrl+H/J/K/L`
+between panes and docks; `F2` project panel.
+
+Debugging uses Zed's defaults (`F4` pick a scenario, `F5` continue, `F9`/`space d b`
+breakpoint, `F10`/`F11`/`Shift+F11` step, `space d x` stop, `space d u` panel).
+`debug.json` holds global Go (Delve) and Python (debugpy) scenarios; Zed downloads
+its adapters on first use. Put project-specific tasks and scenarios in
+`<project>/.zed/tasks.json` and `.zed/debug.json`. Zed applies edits immediately.
 
 # Machine-specific Git identity
 
