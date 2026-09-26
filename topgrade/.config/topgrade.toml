@@ -16,7 +16,9 @@
 
 # Disable specific steps - same options as the command line flag
 # Disabling brew_cask to use custom command with -f flag instead
-disable = ["helix", "brew_cask"]
+# Disabling cursor: the cursor-agent installer drops a ~/.local/bin/cursor shim
+# that Topgrade mistakes for the IDE CLI; `cursor --version` always fails there.
+disable = ["helix", "brew_cask", "cursor"]
 
 # Ignore failures for these steps
 # ignore_failures = ["powershell"]
