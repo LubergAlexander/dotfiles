@@ -55,7 +55,7 @@ require("lazy").setup({
 
     -- Icons (mini.icons to mock nvim-web-devicons)
     {
-        "echasnovski/mini.icons",
+        "nvim-mini/mini.icons",
         lazy = true,
         opts = {},
         init = function()
@@ -66,37 +66,10 @@ require("lazy").setup({
         end,
     },
 
-    -- Automatic dark/light mode switching
-    {
-        "cormacrelf/dark-notify",
-        lazy = false,
-        priority = 999,
-        config = function()
-            local dn = require('dark_notify')
-            dn.configure({
-                schemes = {
-                    dark = { colorscheme = "gruvbox", background = "dark" },
-                    light = { colorscheme = "gruvbox", background = "light" },
-                },
-                onchange = function()
-                    vim.cmd('colorscheme gruvbox')
-                end,
-            })
-            if vim.uv.os_uname().sysname == "Darwin" then
-                dn.run()
-            else
-                dn.set_mode(vim.o.background)
-            end
-            vim.keymap.set('n', '<leader>tb', function()
-                dn.toggle()
-            end, { desc = "Toggle background dark/light" })
-        end,
-    },
-
     -- Fuzzy finder (fzf-lua in place of Telescope)
     {
         "ibhagwan/fzf-lua",
-        dependencies = { "echasnovski/mini.icons" },
+        dependencies = { "nvim-mini/mini.icons" },
         keys = {
             { "<leader>ff", "<cmd>FzfLua files<CR>",     desc = "Find Files" },
             { "<leader>fg", "<cmd>FzfLua live_grep<CR>", desc = "Live Grep" },
@@ -203,10 +176,8 @@ require("lazy").setup({
         "neovim/nvim-lspconfig",
         lazy = false,
         config = function()
-            -- Advertise blink.cmp's completion capabilities to all servers
-            vim.lsp.config('*', {
-                capabilities = require('blink.cmp').get_lsp_capabilities(),
-            })
+            -- blink.cmp registers its completion capabilities for '*' when it
+            -- loads (BufReadPre), before any server starts on FileType.
 
             -- Configure LSP servers using vim.lsp.config (new in 0.11)
             vim.lsp.config('gopls', {
@@ -241,14 +212,9 @@ require("lazy").setup({
                     },
                 },
             })
+            -- lazydev.nvim supplies Neovim runtime/plugin types on demand.
             vim.lsp.config('lua_ls', {
-                settings = {
-                    Lua = {
-                        runtime = { version = 'LuaJIT' },
-                        diagnostics = { globals = { 'vim' } },
-                        workspace = { checkThirdParty = false, library = vim.api.nvim_get_runtime_file("", true) },
-                    }
-                }
+                settings = { Lua = { workspace = { checkThirdParty = false } } },
             })
 
             -- Global LSP on-attach keybindings (modern pattern)
@@ -279,16 +245,31 @@ require("lazy").setup({
         end,
     },
 
+    -- Lua LSP types for the Neovim API and installed plugins, loaded lazily
+    {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = { { path = "${3rd}/luv/library", words = { "vim%.uv" } } },
+        },
+    },
+
     -- Auto-completion (blink.cmp — LSP/path/buffer/snippets built in)
     {
         "saghen/blink.cmp",
         version = "1.*", -- v2 still has breaking changes; stay on stable
-        event = { "InsertEnter", "CmdlineEnter" },
+        -- Must load before the first LSP server starts so its capabilities apply.
+        event = { "BufReadPre", "BufNewFile", "InsertEnter", "CmdlineEnter" },
         opts = {
             -- 'enter' preset: <CR> accepts, <C-space> opens menu/docs,
             -- <C-e> hides, <C-b>/<C-f> scroll docs (matches old cmp mappings)
             keymap = { preset = "enter" },
-            sources = { default = { "lsp", "path", "snippets", "buffer" } },
+            sources = {
+                default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+                providers = {
+                    lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 100 },
+                },
+            },
             fuzzy = { implementation = "prefer_rust_with_warning" },
         },
     },
@@ -305,6 +286,8 @@ require("lazy").setup({
             local parsers = {
                 "go", "python", "bash", "yaml", "lua", "vim", "vimdoc",
                 "gomod", "gosum", "markdown", "markdown_inline",
+                "json", "toml", "dockerfile", "helm", "gotmpl", "hcl",
+                "make", "diff", "gitcommit",
             }
             require("nvim-treesitter").install(parsers)
 
@@ -333,7 +316,7 @@ require("lazy").setup({
         },
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "echasnovski/mini.icons",
+            "nvim-mini/mini.icons",
             "MunifTanjim/nui.nvim",
         },
     },
@@ -369,7 +352,7 @@ require("lazy").setup({
     {
         "nvim-lualine/lualine.nvim",
         event = "VeryLazy",
-        dependencies = { "echasnovski/mini.icons" },
+        dependencies = { "nvim-mini/mini.icons" },
         config = function()
             require("lualine").setup({
                 options = {
@@ -450,6 +433,19 @@ require("lazy").setup({
         ft = "python",
     },
 
+    -- Ctrl-h/j/k/l across nvim splits and tmux panes (pairs with the tmux plugin)
+    {
+        "christoomey/vim-tmux-navigator",
+        cmd = { "TmuxNavigateLeft", "TmuxNavigateDown", "TmuxNavigateUp", "TmuxNavigateRight", "TmuxNavigatePrevious" },
+        keys = {
+            { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Navigate left" },
+            { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Navigate down" },
+            { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Navigate up" },
+            { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Navigate right" },
+            { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Navigate previous" },
+        },
+    },
+
     -- Claude Code integration (same IDE protocol as the official VS Code
     -- extension: selection context, diff review in nvim; uses the claude CLI)
     {
@@ -523,7 +519,18 @@ require("lazy").setup({
             "jay-babu/mason-nvim-dap.nvim",
             "nvim-neotest/nvim-nio",
         },
-        event = "VeryLazy",
+        keys = {
+            { "<F5>",       desc = "DAP: Continue/Start" },
+            { "<F10>",      desc = "DAP: Step Over" },
+            { "<F11>",      desc = "DAP: Step Into" },
+            { "<F12>",      desc = "DAP: Step Out" },
+            { "<leader>db", desc = "DAP: Toggle Breakpoint" },
+            { "<leader>dB", desc = "DAP: Conditional Breakpoint" },
+            { "<leader>dl", desc = "DAP: Logpoint" },
+            { "<leader>dr", desc = "DAP: REPL" },
+            { "<leader>du", desc = "DAP: Toggle UI" },
+            { "<leader>dx", desc = "DAP: Terminate" },
+        },
         config = function()
             local dap = require("dap")
             local dapui = require("dapui")
@@ -716,16 +723,11 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.hlsearch = true
-vim.opt.incsearch = true
 vim.opt.termguicolors = true
 vim.opt.splitright = true
 vim.opt.splitbelow = true
-vim.opt.hidden = true
 vim.opt.backup = true
 vim.opt.undofile = true
-vim.opt.undolevels = 1000
-vim.opt.undoreload = 10000
 
 -- Set backup, swap, and undo file directories
 local nvim_data = vim.fn.stdpath('data')
@@ -751,3 +753,9 @@ vim.keymap.set('n', 'vv', ':vsplit<CR>')
 vim.keymap.set('n', 'ss', ':split<CR>')
 vim.keymap.set('n', ';', ':')
 vim.keymap.set('v', ';', ':')
+
+-- 'background' follows the terminal (OSC 11 + DEC 2031 theme updates); setting
+-- it at runtime reloads gruvbox. Never set it during startup: that disables tracking.
+vim.keymap.set('n', '<leader>tb', function()
+    vim.o.background = vim.o.background == 'dark' and 'light' or 'dark'
+end, { desc = "Toggle background dark/light" })
