@@ -446,6 +446,14 @@ require("lazy").setup({
         },
     },
 
+    -- Zen mode: centered 120-col float with dimmed surroundings (Zed: space z)
+    {
+        "folke/snacks.nvim",
+        keys = {
+            { "<leader>z", function() require("snacks").zen() end, desc = "Toggle zen mode" },
+        },
+    },
+
     -- Claude Code integration (same IDE protocol as the official VS Code
     -- extension: selection context, diff review in nvim; uses the claude CLI)
     {

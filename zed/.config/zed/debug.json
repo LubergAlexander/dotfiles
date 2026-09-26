@@ -1,0 +1,34 @@
+// Global debug scenarios (F4 picks one); mirrors the nvim-dap configurations.
+// Per-project scenarios go in <project>/.zed/debug.json.
+[
+  {
+    "label": "Go: debug current package",
+    "adapter": "Delve",
+    "request": "launch",
+    "mode": "debug",
+    "program": "$ZED_DIRNAME"
+  },
+  {
+    "label": "Go: debug package tests",
+    "adapter": "Delve",
+    "request": "launch",
+    "mode": "test",
+    "program": "$ZED_DIRNAME"
+  },
+  {
+    "label": "Python: current file",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "$ZED_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Python: pytest",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-q"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "justMyCode": false
+  }
+]

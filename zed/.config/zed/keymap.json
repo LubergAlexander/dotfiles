@@ -25,9 +25,17 @@
       "space h r": "git::Restore",
       "space h b": "git::Blame",
       "space h d": "git::Diff",
+      "space g g": "git_panel::ToggleFocus",
       // Tests / agent
       "space t n": "editor::SpawnNearestTask",
-      "space a c": "agent::ToggleFocus"
+      "space a c": "agent::ToggleFocus",
+      // Toggles (nvim: <leader>z zen, <leader>t* toggles); zen also closes docks (F2 reopens the tree)
+      "space z": ["action::Sequence", ["workspace::ToggleCenteredLayout", "workspace::CloseAllDocks"]],
+      "space t i": "editor::ToggleInlayHints",
+      // nvim-dap equivalents; F4/F5/F9/F10/F11/shift-F11 are Zed defaults
+      "space d b": "editor::ToggleBreakpoint",
+      "space d u": "debug_panel::ToggleFocus",
+      "space d x": "debugger::Stop"
     }
   },
   {

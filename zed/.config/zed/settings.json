@@ -28,6 +28,15 @@
   "tab_size": 4,
   "soft_wrap": "none",
   "show_whitespaces": "selection",
+  "vim": {
+    // Yanks reach the macOS clipboard; deletes/changes stay in vim registers.
+    "use_system_clipboard": "on_yank",
+    "highlight_on_yank_duration": 150,
+    // Absolute numbers in insert mode, relative elsewhere.
+    "toggle_relative_line_numbers": true,
+    "cursor_shape": { "normal": "block", "visual": "block", "replace": "underline", "insert": "bar" }
+  },
+  "inlay_hints": { "enabled": true, "edit_debounce_ms": 300 },
 
   // Appearance
   "theme": {
@@ -39,6 +48,8 @@
   "buffer_font_fallbacks": ["Hack Nerd Font Mono"],
   "buffer_font_features": { "calt": true, "liga": true },
   "buffer_font_size": 17,
+  // Ghostty's cell height: Berkeley Mono's 1.2 line metrics plus adjust-cell-height 4%.
+  "buffer_line_height": { "custom": 1.25 },
   "ui_font_size": 16,
   "terminal": {
     "font_family": "BerkeleyMono Nerd Font",
@@ -66,9 +77,18 @@
     "show_sign_in": false,
     "show_menus": false
   },
-  "gutter": { "folds": false, "runnables": false, "breakpoints": false },
+  "gutter": { "folds": false, "runnables": false, "breakpoints": true },
   "indent_guides": { "enabled": true, "coloring": "fixed" },
-  "git": { "inline_blame": { "enabled": false } },
+  // Blame appears only after the cursor rests on a line.
+  "git": { "inline_blame": { "enabled": true, "delay_ms": 600, "show_commit_summary": true } },
+  "centered_layout": { "left_padding": 0.2, "right_padding": 0.2 },
+  // Replaces Zed's defaults (VCS dirs, OS junk) plus caches and dependency trees.
+  "file_scan_exclusions": [
+    "**/.git", "**/.svn", "**/.hg", "**/.jj", "**/.sl", "**/.repo", "**/CVS",
+    "**/.DS_Store", "**/Thumbs.db", "**/.classpath", "**/.settings",
+    "**/.venv", "**/__pycache__", "**/.mypy_cache", "**/.pytest_cache", "**/.ruff_cache",
+    "**/node_modules", "**/vendor", "**/.terraform"
+  ],
   "project_panel": { "button": false, "dock": "left", "hide_gitignore": false },
   "outline_panel": { "button": false },
   "collaboration_panel": { "button": false },
