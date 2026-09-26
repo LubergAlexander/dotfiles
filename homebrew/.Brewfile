@@ -50,7 +50,7 @@ brew "ripgrep"
 brew "jq"
 brew "jless"
 brew "llm"
-
+brew "herdr"
 # Container & Cloud
 brew "kubernetes-cli"
 brew "helm"
