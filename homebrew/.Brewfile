@@ -52,6 +52,7 @@ brew "eza"
 brew "ripgrep"
 brew "jq"
 brew "jless"
+brew "yazi"
 brew "llm"
 brew "herdr"
 # Container & Cloud
