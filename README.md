@@ -289,7 +289,6 @@ command palette. Space-leader bindings follow Neovim: `space f f/g/b` files, gre
 and open tabs; `space h p/s/r/b/d` hunk preview, stage, restore, blame, and diff;
 `]h`/`[h` hunks; `vv`/`ss` splits; `;` command palette; `Ctrl+H/J/K/L` between
 panes and docks; `F2` project panel. Zed applies edits to either file immediately.
-Changes made through Zed's settings UI write into the tracked file.
 
 # Machine-specific Git identity
 
