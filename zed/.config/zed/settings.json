@@ -37,6 +37,7 @@
   },
   "buffer_font_family": "BerkeleyMono Nerd Font",
   "buffer_font_fallbacks": ["Hack Nerd Font Mono"],
+  "buffer_font_features": { "calt": true, "liga": true },
   "buffer_font_size": 15,
   "ui_font_size": 16,
   "terminal": {
@@ -78,7 +79,9 @@
   // AI: agents via ACP, no inline edit predictions (matches Neovim)
   "agent_servers": {
     "claude-acp": { "type": "registry" },
-    "cursor": { "type": "registry" }
+    "cursor": { "type": "registry" },
+    // oh-my-pi over ACP; reuses provider credentials under ~/.omp
+    "omp": { "type": "custom", "command": "omp", "args": ["acp"] }
   },
   "edit_predictions": { "provider": "none" },
 
