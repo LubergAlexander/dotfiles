@@ -28,7 +28,10 @@
   "tab_size": 4,
   "soft_wrap": "none",
   "show_whitespaces": "selection",
+  // Neovim's ignorecase+smartcase: lowercase matches any case, a capital makes it exact.
+  "use_smartcase_search": true,
   "vim": {
+    "use_smartcase_find": true,
     // Yanks reach the macOS clipboard; deletes/changes stay in vim registers.
     "use_system_clipboard": "on_yank",
     "highlight_on_yank_duration": 150,
@@ -102,7 +105,10 @@
     "claude-acp": { "type": "registry" },
     "cursor": { "type": "registry" },
     // oh-my-pi over ACP; reuses provider credentials under ~/.omp
-    "omp": { "type": "custom", "command": "omp", "args": ["acp"] }
+    "omp": { "default_config_options": {
+                 "model": "anthropic/claude-opus-5-5"
+             },
+             "type": "custom", "command": "omp", "args": ["acp"] }
   },
   "edit_predictions": { "provider": "none" },
 
