@@ -9,6 +9,15 @@
   "session": {
     "trust_all_worktrees": true
   },
+  // Languages Zed doesn't bundle, matching the Neovim treesitter parsers
+  "auto_install_extensions": {
+    "lua": true,
+    "toml": true,
+    "dockerfile": true,
+    "helm": true,
+    "make": true,
+    "terraform": true
+  },
 
   // Editing model
   "vim_mode": true,
@@ -92,6 +101,9 @@
     "Markdown": { "soft_wrap": "editor_width" }
   },
   "lsp": {
+    "lua-language-server": {
+      "settings": { "Lua": { "diagnostics": { "globals": ["vim"] } } }
+    },
     "gopls": {
       "initialization_options": {
         "gofumpt": true,
