@@ -19,7 +19,6 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # Reduce zinit's self-reporting
 ZINIT[OPTIMIZE_OUT_DISK_ACCESSES]=1
-ZINIT[COMPINIT_OPTS]=-C
 
 # Environment setup
 export EDITOR="nvim"
@@ -126,9 +125,10 @@ bindkey '\e.' insert-last-word
 zinit ice depth=1 atload'source ~/.p10k.zsh' nocd
 zinit light romkatv/powerlevel10k
 
-# Essential plugins in turbo mode
+# Essential plugins in turbo mode. compinit already ran above; only replay the
+# compdef calls zinit captured while loading plugins.
 zinit wait'0' lucid for \
-   atinit"zicompinit; zicdreplay" \
+   atinit"zicdreplay" \
    zdharma-continuum/fast-syntax-highlighting
 
 # Completions and tools
@@ -161,6 +161,10 @@ zinit wait'2' lucid for \
    OMZP::kubectx \
    OMZP::direnv \
    OMZP::command-not-found \
-   OMZP::colored-man-pages \
-   is-snippet ~/.aliases.zsh \
-   is-snippet ~/.secrets.env
+   OMZP::colored-man-pages
+
+# Local files are sourced in place (not copied into zinit's snippet cache), after
+# the OMZ libs so their ls/ll aliases are overridden.
+zinit wait'2' lucid for \
+   atload'source ~/.aliases.zsh; [[ -r ~/.secrets.env ]] && source ~/.secrets.env' \
+   zdharma-continuum/null
