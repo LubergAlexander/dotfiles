@@ -1,15 +1,20 @@
+# Roles without an effort suffix use defaultThinkingLevel: auto, where JEV (judge)
+# picks the effort per request. Fallbacks switch provider so one exhausted
+# subscription (Anthropic, Codex, Grok) doesn't stall the role.
 defaultThinkingLevel: auto
 modelRoles:
-  default: openai-codex/gpt-6-astra
-  slow: openai-codex/gpt-6-astra:max
-  plan: openai-codex/gpt-6-astra:max
-  vision: openai-codex/gpt-6-astra:high
-  task: xai-oauth/grok-4.7:medium
-  smol: xai-oauth/grok-4.7:low
-  tiny: xai-oauth/grok-4.7:low
-  commit: xai-oauth/grok-4.7:low
-  advisor: anthropic/claude-opus-5:high
+  default: anthropic/claude-opus-5-5          # ~Fable 5.1 quality at a third of the cost
+  slow: anthropic/claude-fable-5-1:high        # top coding-agent model for deep work
+  plan: anthropic/claude-fable-5-1:high
+  vision: anthropic/claude-opus-5-5:high
+  task: openai-codex/gpt-6-sol                 # subagents on the Codex quota; effort by JEV
+  smol: xai-oauth/grok-4.7:low                 # scout runs this at medium; strong agent loops
+  tiny: openai-codex/gpt-6-luna:low            # titles, one-shot text; no tool loops
+  commit: openai-codex/gpt-6-luna:low
+  advisor: openai-codex/gpt-6-astra:high       # a different family reviews Claude's work
   judge: typesafe/jev-latest
+features:
+  unexpectedStopDetection: smart               # JEV judges whether a stop was premature
 symbolPreset: nerd
 composer:
   shape: rule
@@ -38,22 +43,23 @@ retry:
   fallbackRevertPolicy: cooldown-expiry
   fallbackChains:
     default:
-      - openai-codex/gpt-5.6-sol
+      - openai-codex/gpt-6-astra
     slow:
-      - openai-codex/gpt-5.6-sol:max
+      - openai-codex/gpt-6-astra:high
     plan:
-      - openai-codex/gpt-5.6-sol:max
+      - openai-codex/gpt-6-astra:high
     vision:
-      - openai-codex/gpt-5.6-sol:high
+      - openai-codex/gpt-6-sol:high
     task:
-      - openai-codex/gpt-5.6-sol:medium
+      - xai-oauth/grok-4.7
     smol:
-      - openai-codex/gpt-5.6-sol:low
+      - openai-codex/gpt-6-sol:low
     tiny:
-      - openai-codex/gpt-5.6-sol:low
+      - xai-oauth/grok-4.7:low
     commit:
-      - openai-codex/gpt-5.6-sol:low
+      - xai-oauth/grok-4.7:low
     advisor:
-      - openai-codex/gpt-5.6-sol:high
+      - anthropic/claude-fable-5-1:high
     judge:
+      - typesafe/jev-preview
       - "@tiny"
