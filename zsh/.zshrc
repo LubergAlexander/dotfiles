@@ -5,13 +5,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-skip_global_compinit=1
-DISABLE_COMPFIX=true
-ZSH_DISABLE_COMPFIX=true
-
-# Performance optimization
-typeset -g HISTFILE_LOCK_TIMEOUT=5
-
 # Zinit initialization
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [[ ! -d "$ZINIT_HOME" ]] && mkdir -p "$(dirname $ZINIT_HOME)" && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
@@ -86,14 +79,20 @@ if [[ -n "$HOMEBREW_PREFIX" ]]; then
 fi
 
 # Optimized completion initialization
-# Use the cached dump (-C) if it was refreshed within the last 24h
+# Use the cached dump (-C) if it was refreshed within the last 24h. Glob into an
+# array: qualifiers don't expand inside [[ ]] without extendedglob.
 autoload -Uz compinit
-if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]]; then
- compinit -C
+_zcompdump=${ZDOTDIR:-$HOME}/.zcompdump
+_zcompdump_fresh=( $_zcompdump(N.mh-24) )
+if (( $#_zcompdump_fresh )); then
+ compinit -C -d $_zcompdump
 else
- compinit
- zcompile ${ZDOTDIR:-$HOME}/.zcompdump
+ compinit -d $_zcompdump
+ # compinit keeps an unchanged dump as is; touch it so the 24h window restarts.
+ touch $_zcompdump
+ zcompile $_zcompdump
 fi
+unset _zcompdump _zcompdump_fresh
 _comp_options+=(globdots)
 
 # Completion styling
