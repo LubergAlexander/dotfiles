@@ -20,6 +20,9 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Reduce zinit's self-reporting
 ZINIT[OPTIMIZE_OUT_DISK_ACCESSES]=1
 
+# Gruvbox (ANSI palette) colors for zinit's update/report output
+source ~/.zinit-theme.zsh
+
 # Environment setup
 export EDITOR="nvim"
 export VISUAL="$EDITOR"

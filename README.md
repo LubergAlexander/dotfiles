@@ -7,7 +7,7 @@ the system light/dark setting across Ghostty, tmux, Neovim, Zed, fzf, bat, and o
 
 | Package | Contents |
 | --- | --- |
-| `zsh` | `.zshrc` (zinit, fzf, zoxide), `.aliases.zsh`, Powerlevel10k prompt |
+| `zsh` | `.zshrc` (zinit, fzf, zoxide), `.aliases.zsh`, `.zinit-theme.zsh` (Gruvbox zinit colors), Powerlevel10k prompt |
 | `tmux` | `tmux.conf`, Gruvbox themes, copy-mode opener script |
 | `nvim` | single-file `init.lua` and `lazy-lock.json` |
 | `ghostty` | terminal config and Gruvbox themes |
