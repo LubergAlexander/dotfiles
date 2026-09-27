@@ -120,7 +120,7 @@ require("lazy").setup({
         "mason-org/mason-lspconfig.nvim",
         dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },
         opts = {
-            ensure_installed = { "gopls", "pyright", "ruff", "bashls", "yamlls", "lua_ls" },
+            ensure_installed = { "gopls", "basedpyright", "ruff", "bashls", "yamlls", "lua_ls" },
         },
     },
 
@@ -195,15 +195,13 @@ require("lazy").setup({
             vim.lsp.config('ruff', {
                 init_options = { settings = { logLevel = "info" } }
             })
-            vim.lsp.config('pyright', {
+            -- Same server and strictness as Zed (basedpyright in "standard" mode);
+            -- Ruff owns import organization.
+            vim.lsp.config('basedpyright', {
                 settings = {
-                    pyright = { disableOrganizeImports = true },
-                    python = {
-                        analysis = {
-                            typeCheckingMode = "basic",
-                            autoSearchPaths = true,
-                            useLibraryCodeForTypes = true,
-                        },
+                    basedpyright = {
+                        disableOrganizeImports = true,
+                        analysis = { typeCheckingMode = "standard" },
                     },
                 },
             })
