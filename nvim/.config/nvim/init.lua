@@ -124,12 +124,15 @@ require("lazy").setup({
         },
     },
 
-    -- Install formatter CLIs; language servers and debug adapters keep their bridges.
+    -- Install formatter CLIs and debug adapters; language servers keep their bridge.
     {
         "WhoIsSethDaniel/mason-tool-installer.nvim",
         dependencies = { "mason-org/mason.nvim" },
         opts = {
-            ensure_installed = { "goimports", "gofumpt", "shfmt", "stylua", "prettier", "taplo" },
+            ensure_installed = {
+                "goimports", "gofumpt", "shfmt", "stylua", "prettier", "taplo",
+                "delve", "debugpy", -- used by dap-go / dap-python via Mason's bin on PATH
+            },
             integrations = {
                 ["mason-lspconfig"] = false,
                 ["mason-null-ls"] = false,
@@ -550,13 +553,15 @@ require("lazy").setup({
             },
         },
     },
-    -- Debugging: nvim-dap + UI + virtual text + Mason integration
+    -- Debugging: nvim-dap + UI + virtual text; language setup from the standard
+    -- extensions (dap-go, dap-python). Mason Tool Installer provides dlv and debugpy.
     {
         "mfussenegger/nvim-dap",
         dependencies = {
             "rcarriga/nvim-dap-ui",
             "theHamsta/nvim-dap-virtual-text",
-            "jay-babu/mason-nvim-dap.nvim",
+            "leoluz/nvim-dap-go",
+            "mfussenegger/nvim-dap-python",
             "nvim-neotest/nvim-nio",
         },
         keys = {
@@ -591,82 +596,10 @@ require("lazy").setup({
             dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
             dap.listeners.before.event_exited["dapui_config"]     = function() dapui.close() end
 
-            -- Adapters via Mason (debugpy, delve)
-            require("mason-nvim-dap").setup({
-                automatic_installation = true,
-                ensure_installed = { "python", "delve" },
-                handlers = {
-                    -- Python (debugpy)
-                    python = function()
-                        dap.adapters.python = function(cb, _)
-                            -- Use Mason's debugpy
-                            local mason = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
-                            cb({ type = "executable", command = mason, args = { "-m", "debugpy.adapter" } })
-                        end
-                        -- Prefer project venv for running the code (not the adapter)
-                        local function project_python()
-                            for _, p in ipairs({ ".venv/bin/python", "venv/bin/python", "env/bin/python" }) do
-                                local f = vim.fn.getcwd() .. "/" .. p
-                                if vim.fn.executable(f) == 1 then return f end
-                            end
-                            -- fallback to host python from your config
-                            return vim.g.python3_host_prog
-                        end
-                        dap.configurations.python = {
-                            {
-                                type = "python",
-                                request = "launch",
-                                name = "▶ Python: current file",
-                                program = "${file}",
-                                python = project_python,
-                                console = "integratedTerminal",
-                            },
-                            {
-                                type = "python",
-                                request = "launch",
-                                name = "▶ Python: module",
-                                module = "pytest",
-                                args = { "-q" },
-                                justMyCode = false,
-                                python = project_python,
-                                console = "integratedTerminal",
-                            },
-                        }
-                    end,
-
-                    -- Go (dlv): Mason's managed executable and dynamic port.
-                    -- Delve runs `go build` in its own working directory (Neovim's cwd),
-                    -- not the launch `cwd`; point it at the program's module root.
-                    delve = function(config)
-                        dap.adapters.go = vim.tbl_extend("force", config.adapters, {
-                            enrich_config = function(cfg, on_config)
-                                if not cfg.dlvCwd and cfg.program then
-                                    cfg = vim.deepcopy(cfg)
-                                    cfg.dlvCwd = vim.fs.root(cfg.program, "go.mod")
-                                end
-                                on_config(cfg)
-                            end,
-                        })
-
-                        dap.configurations.go = {
-                            {
-                                type = "go",
-                                name = "Debug Current Package",
-                                request = "launch",
-                                -- The whole package: a lone file misses its siblings.
-                                program = "${fileDirname}",
-                            },
-                            {
-                                type = "go",
-                                name = "Debug Package (all tests)",
-                                request = "launch",
-                                mode = "test",
-                                program = "${fileDirname}",
-                            },
-                        }
-                    end,
-                },
-            })
+            -- Adapters and stock configurations. dap-go: Debug Package, Debug test, attach, …
+            -- dap-python: launch file, venv detection (cwd or LSP root), test_method().
+            require("dap-go").setup()
+            require("dap-python").setup("debugpy-adapter")
 
             -- Keymaps (matching common DAP UX)
             local map = function(mode, lhs, rhs, desc)
@@ -707,7 +640,7 @@ require("lazy").setup({
         end,
     },
 
-    -- Test runner: neotest with Go adapter (based on research)
+    -- Test runner: neotest with Go and Python adapters; debugging goes through dap-go/dap-python.
     {
         "nvim-neotest/neotest",
         dependencies = {
@@ -715,6 +648,7 @@ require("lazy").setup({
             "nvim-lua/plenary.nvim",
             "nvim-treesitter/nvim-treesitter",
             "fredrikaverpil/neotest-golang",
+            "nvim-neotest/neotest-python",
         },
         keys = {
             { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end,   desc = "Test: Run current file" },
@@ -730,12 +664,8 @@ require("lazy").setup({
                 adapters = {
                     require("neotest-golang")({
                         go_test_args = { "-count=1", "-timeout=60s", "-race" },
-                        dap_mode = "manual",
-                        -- Fresh config: Neotest adds the selected test's program and filter.
-                        dap_manual_config = function()
-                            return { type = "go", request = "launch", name = "Debug nearest test", mode = "test" }
-                        end,
                     }),
+                    require("neotest-python"),
                 },
                 output = {
                     enabled = true,

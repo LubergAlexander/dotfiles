@@ -163,17 +163,29 @@ Python import organization does not enable unrelated Ruff lint fixes.
 LSP. `:ConformInfo` shows the selected formatters, availability, and error log.
 
 Mason Tool Installer installs missing `goimports`, `gofumpt`, `shfmt`, `stylua`,
-`prettier`, and `taplo` binaries on startup; Ruff is already provisioned by the
-LSP bridge. Allow installation to finish on a fresh machine, or run
+`prettier`, `taplo`, `delve`, and `debugpy` binaries on startup; Ruff is already
+provisioned by the LSP bridge. Allow installation to finish on a fresh machine, or run
 `:MasonToolsInstallSync` to wait explicitly. Existing tools are not automatically
-upgraded on each startup. Avoid `:MasonToolsClean`: this installer's list contains
-only formatter tools, while the other Mason bridges manage LSP and DAP packages.
+upgraded on each startup. Avoid `:MasonToolsClean`: this installer's list excludes
+the language servers managed by the mason-lspconfig bridge.
 
 Restart Neovim after deploying configuration changes; sourcing the whole config
 into an existing process is not the reload path.
 
 Formatting errors or timeouts are reported but do not block the write; inspect
 `:ConformInfo` if a file could not be formatted.
+
+# Neovim debugging
+
+nvim-dap uses the standard language extensions instead of hand-written adapters:
+[nvim-dap-go](https://github.com/leoluz/nvim-dap-go) and
+[nvim-dap-python](https://codeberg.org/mfussenegger/nvim-dap-python). `F5` offers
+their stock configurations (for Go, pick **Debug Package**; **Debug** builds only the
+current file). `Space t d` debugs the nearest test through neotest (Go and Python)
+and works even when Neovim was started outside the project, as long as a Python
+project has a marker such as `pyproject.toml`. The stock `F5` configurations assume
+Neovim was started at the project root. dap-python runs the code with the project's
+`.venv`/`venv` and picks unittest or pytest from the project's config.
 
 # Neovim AI integration
 
