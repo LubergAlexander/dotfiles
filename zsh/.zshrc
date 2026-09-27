@@ -24,6 +24,9 @@ ZINIT[OPTIMIZE_OUT_DISK_ACCESSES]=1
 export EDITOR="nvim"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
+# bat asks the terminal for its background and picks the matching Gruvbox theme.
+export BAT_THEME_DARK="gruvbox-dark"
+export BAT_THEME_LIGHT="gruvbox-light"
 
 # SSH-Agent
 # macOS: launchd already sets SSH_AUTH_SOCK per session — inherit it untouched.

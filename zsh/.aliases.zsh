@@ -20,12 +20,3 @@ update_neovim_venvs () {
   fi
   uv pip install --python "$venv/bin/python" --upgrade pynvim
 }
-
-# Respect an explicit theme; otherwise follow macOS appearance or default dark.
-bat() {
-  local mode=dark
-  if [[ -z "$BAT_THEME" && "$OSTYPE" == darwin* ]] && (( $+commands[dark-notify] )); then
-    [[ "$(dark-notify -e)" != light ]] || mode=light
-  fi
-  BAT_THEME="${BAT_THEME:-gruvbox-$mode}" command bat "$@"
-}

@@ -15,8 +15,6 @@ brew "glow"
 brew "direnv"
 tap "can1357/tap"
 brew "can1357/tap/omp"
-tap "cormacrelf/tap"
-brew "cormacrelf/tap/dark-notify"
 
 # System Utilities
 brew "coreutils"

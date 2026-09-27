@@ -81,8 +81,8 @@ for example `yay -S --needed - < arch_aur_pkglist.txt`.
 Docker daemon setup, desktop sessions, and SSH-agent services
 are machine-specific; they are not enabled by Stow. The shell preserves an inherited
 SSH agent and only selects `$XDG_RUNTIME_DIR/ssh-agent.socket` when that socket exists.
-macOS appearance detection is not needed on Linux: `bat` defaults to `gruvbox-dark`
-unless `BAT_THEME` is set explicitly. Run `chsh -s /usr/bin/zsh` to select the
+`bat` picks `gruvbox-dark` or `gruvbox-light` by querying the terminal background
+(`BAT_THEME_DARK`/`BAT_THEME_LIGHT`) on both platforms. Run `chsh -s /usr/bin/zsh` to select the
 installed Zsh as the login shell used by Ghostty; tmux also uses installed Zsh.
 
 # Install the configs (both platforms)
