@@ -13,7 +13,7 @@ brew "git-lfs"
 brew "tlrc"
 brew "glow"
 brew "direnv"
-tap "can1357/tap"
+tap "can1357/tap", trusted: true
 brew "can1357/tap/omp"
 
 # System Utilities
@@ -35,9 +35,9 @@ brew "pv"
 brew "syncthing", restart_service: :changed
 brew "nmap"
 brew "mtr"
-tap "teamookla/speedtest"
+tap "teamookla/speedtest", trusted: true
 brew "teamookla/speedtest/speedtest"
-tap "buo/cask-upgrade"
+tap "buo/cask-upgrade", trusted: true
 
 
 # Shell & Navigation
