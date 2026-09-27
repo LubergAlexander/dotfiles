@@ -9,11 +9,11 @@ servers:
           shadow: true
         staticcheck: true
         gofumpt: true
-  pyright:
+  basedpyright:
     settings:
-      python:
+      basedpyright:
         analysis:
-          typeCheckingMode: basic
+          typeCheckingMode: standard
           autoSearchPaths: true
           diagnosticMode: openFilesOnly
           useLibraryCodeForTypes: true
