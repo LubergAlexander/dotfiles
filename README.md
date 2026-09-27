@@ -1,359 +1,211 @@
 dotfiles
 ========
 
-Configs managed with [GNU Stow](https://www.gnu.org/software/stow/). Each top-level
-package directory mirrors `$HOME`. Run the commands below from the repository root.
+macOS and Arch Linux configs, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Every top-level directory is a package that mirrors `$HOME`. One Gruvbox theme follows
+the system light/dark setting across Ghostty, tmux, Neovim, Zed, fzf, bat, and omp.
 
-# Prerequisites
+| Package | Contents |
+| --- | --- |
+| `zsh` | `.zshrc` (zinit, fzf, zoxide), `.aliases.zsh`, Powerlevel10k prompt |
+| `tmux` | `tmux.conf`, Gruvbox themes, copy-mode opener script |
+| `nvim` | single-file `init.lua` and `lazy-lock.json` |
+| `ghostty` | terminal config and Gruvbox themes |
+| `zed` | settings, Neovim-style keymap, debug scenarios |
+| `git` | `.gitconfig` (delta, zdiff3); identity lives in `~/.gitconfig.local` |
+| `omp` | agent config and LSP settings |
+| `yazi`, `topgrade` | small overrides |
+| `homebrew` | `.Brewfile` |
 
-- **Neovim 0.12 or newer**, Git, a C compiler, Go, Node.js/npm, `tree-sitter-cli`,
-  and `uv`. Mason installs the configured servers, formatters, and debug adapters;
-  it needs these language runtimes and archive tools, not just Neovim.
-- The Neovim Python provider is explicitly provisioned at
-  `~/.virtualenvs/neovim3/bin/python`; a system `pynvim` package is not a substitute.
-- Exact Ghostty appearance requires the licensed **BerkeleyMono Nerd Font** family
-  at size 17. Obtain Berkeley Mono from [its publisher](https://usgraphics.com/products/berkeley-mono)
-  and install your licensed, appropriately patched copy manually. No proprietary
-  font is downloaded by this repository. Homebrew and Arch lists include Hack Nerd
-  Font as a free alternative; Ghostty and Zed fall back to `Hack Nerd Font Mono`
-  automatically when Berkeley Mono is absent.
-- Ghostty uses its native `xterm-ghostty` capabilities, and tmux uses
-  `tmux-256color`. Install the matching terminfo on remote hosts too rather than
-  overriding `TERM` to impersonate another terminal. tmux 3.3+ is required for
-  rounded popups; 3.7+ follows terminal light/dark appearance. Earlier supported
-  versions use the static dark theme.
+Not stowed: `defaults.sh` (macOS preferences) and `arch_pkglist.txt` /
+`arch_aur_pkglist.txt` (Arch packages).
 
-# Fresh machine setup (macOS)
+# Setup
+
+## 1. Packages
+
+**macOS**
 
 ```sh
-# 1. Install Apple's Command Line Tools (compiler, make, archive/system utilities).
-xcode-select --install
-
-# 2. Install Homebrew from https://brew.sh and initialize its shell environment.
-# Apple Silicon:
-eval "$(/opt/homebrew/bin/brew shellenv)"
-# Intel Macs use /usr/local/bin/brew instead.
-# Third-party taps are declared `trusted: true` in the Brewfile (Homebrew 7 trust).
-brew bundle --file=homebrew/.Brewfile
-
-# 3. Install the licensed font manually, then follow "Install the configs" below.
+xcode-select --install                       # compiler, make, archive tools
+# Install Homebrew from https://brew.sh, then:
+eval "$(/opt/homebrew/bin/brew shellenv)"    # Intel: /usr/local/bin/brew
+brew bundle --file=homebrew/.Brewfile        # third-party taps are marked trusted: true
 ```
 
-The Brewfile includes desktop applications as well as CLI dependencies; review it
-before installation. `tlrc` provides the maintained `tldr` command. macOS already
-provides `pbcopy`, `open`, SSH, `tar`, `gzip`, and `unzip`. Ghostty uses native
-login-shell discovery, without a custom launch wrapper. Register the output of
-`printf '%s\n' "$(brew --prefix)/bin/zsh"` in `/etc/shells` using `sudoedit /etc/shells`
-if it is not already listed, then run `chsh -s "$(brew --prefix)/bin/zsh"`.
-This selects `/opt/homebrew/bin/zsh` on Apple Silicon or `/usr/local/bin/zsh` on
-Intel. tmux also selects the installed Homebrew Zsh explicitly.
+The Brewfile includes desktop apps; review it first. To make Homebrew's Zsh the
+login shell, add `$(brew --prefix)/bin/zsh` to `/etc/shells` and run `chsh -s` with it.
 
-After installing the configs, review `defaults.sh` and run `./defaults.sh` to apply
-its macOS preferences. This is separate from Stow and is not an Arch setup step.
-
-# Fresh machine setup (Arch Linux)
+**Arch Linux**
 
 ```sh
-# Official repositories only; never perform a partial Arch upgrade.
 sudo pacman -Syu --needed - < arch_pkglist.txt
-
-# Initialize the database used by the command-not-found shell plugin.
-sudo pkgfile --update
-sudo systemctl enable --now pkgfile-update.timer
-
-# LLM is a Python CLI, installed in its own uv-managed tool environment.
+yay -S --needed - < arch_aur_pkglist.txt     # omp, topgrade, herdr; review PKGBUILDs
 uv tool install llm
-
-# Install a licensed font manually or select the packaged Hack Nerd Font.
-# Then follow "Install the configs" below.
+sudo pkgfile --update && sudo systemctl enable --now pkgfile-update.timer
+chsh -s /usr/bin/zsh
 ```
 
-The package list targets official x86_64 Arch repositories, not Homebrew formula
-names or AUR packages. It includes `eza`, `yazi`, `kubectl`, `helm`, `kubectx`, `krew`,
-`kind`, and Docker tooling. `tealdeer` provides `tldr`; `procps-ng`
-provides `watch`. `ghostty-terminfo` provides `xterm-ghostty`, and `ncurses` provides
-`tmux-256color`. `wl-clipboard` (Wayland), `xclip` (X11), and `xdg-utils` supply
-clipboard/opening backends. `ttf-hack-nerd` is the free font fallback. These names
-are listed in the [official Arch package database](https://archlinux.org/packages/).
+Docker, desktop sessions, and the SSH agent are machine-specific and not set up
+here. The shell uses `$XDG_RUNTIME_DIR/ssh-agent.socket` only if no agent is inherited.
 
-`arch_aur_pkglist.txt` lists [AUR packages](https://aur.archlinux.org/) (`oh-my-pi-bin`,
-`topgrade`, and `herdr-bin`); review their PKGBUILDs and install with your preferred AUR helper,
-for example `yay -S --needed - < arch_aur_pkglist.txt`.
-Docker daemon setup, desktop sessions, and SSH-agent services
-are machine-specific; they are not enabled by Stow. The shell preserves an inherited
-SSH agent and only selects `$XDG_RUNTIME_DIR/ssh-agent.socket` when that socket exists.
-`bat` picks `gruvbox-dark` or `gruvbox-light` by querying the terminal background
-(`BAT_THEME_DARK`/`BAT_THEME_LIGHT`) on both platforms. Run `chsh -s /usr/bin/zsh` to select the
-installed Zsh as the login shell used by Ghostty; tmux also uses installed Zsh.
+**Font.** Ghostty and Zed use the licensed
+[Berkeley Mono](https://usgraphics.com/products/berkeley-mono) Nerd Font at 17 pt,
+installed manually. Both fall back to the free Hack Nerd Font from the package lists.
 
-# Install the configs (both platforms)
+## 2. Configs
 
-Stow refuses conflicting unmanaged files. Back up and reconcile any existing config
-before installing; do not use `--adopt` to overwrite repository files accidentally.
-In particular, the existing prompt is now tracked at `zsh/.p10k.zsh`. To preserve an
-unmanaged `~/.p10k.zsh` before replacing it with a Stow link:
+Stow refuses to replace existing files. Preview, move conflicts aside (don't use
+`--adopt`, which overwrites the repository), then link:
 
 ```sh
-if [ -e "$HOME/.p10k.zsh" ] && [ ! -L "$HOME/.p10k.zsh" ]; then
-  backup_dir=$(mktemp -d "$HOME/.dotfiles-backup.XXXXXX")
-  mv "$HOME/.p10k.zsh" "$backup_dir/.p10k.zsh"
-  printf 'Original prompt preserved in %s\n' "$backup_dir/.p10k.zsh"
-fi
-
-# Preview all package symlinks, resolve any other conflicts, then install them.
 stow --simulate --verbose --no-folding --target="$HOME" --restow */
-make all
-
-# Provision pynvim without activating a venv or deleting existing environments.
-make python-host
+make all            # link every package
+make python-host    # create ~/.virtualenvs/neovim3 with pynvim for Neovim
 ```
 
-`make all` only restows every top-level package into `$HOME`, including Homebrew's
-Brewfile on either platform. It does **not** install OS packages, configure the login
-shell, provision Python, or apply macOS preferences. Stow runs with `--no-folding`
-so target directories remain real directories and application-generated files do
-not land in the repository through directory symlinks. `make delete` removes the
-managed file links, not installed packages or unrelated files.
+`--no-folding` links files, never directories, so files that apps create stay out
+of the repository. `make delete` removes the links.
 
-`make python-host` and the interactive `update_neovim_venvs` helper use the same
-provisioner: create only the missing `neovim3` environment using `uv`, then upgrade
-`pynvim` only inside it. An invalid or broken existing environment is refused, not
-deleted; move that exact directory to a backup and rerun the command if rebuilding
-is necessary. Sibling virtual environments are untouched.
+On first start, zinit installs shell plugins, TPM installs tmux plugins, and Neovim
+installs plugins from `lazy-lock.json` plus Mason's servers, formatters, and
+debuggers. This needs network access.
 
-The tracked Powerlevel10k config preserves the existing colors and single-line layout,
-with transient prompt `always` and instant prompt `quiet`. Edit `~/.p10k.zsh` (the
-Stow link) for prompt settings, not duplicate variables in `.zshrc`. The standard
-instant-prompt preamble stays near the top of `.zshrc`; any initialization requiring
-console input must precede it. On a fresh machine Zinit downloads shell plugins on
-first interactive startup, TPM bootstraps tmux plugins on first tmux startup, and
-Neovim installs its plugins using the committed `lazy-lock.json`. Network access is
-required. Use Lazy's restore operation to return to the committed plugin snapshot;
-updating plugins intentionally changes that snapshot.
+## 3. Machine-local files
 
-`~/.aliases.zsh` and the untracked `~/.secrets.env` are sourced in place, so edits
-take effect in the next shell without any `zinit update`. Keep `~/.secrets.env` at
-mode `600`.
+These are untracked:
 
-# Neovim formatting
+- `~/.gitconfig.local`: identity and GitHub credentials.
 
-Conform owns format-on-save and completes each pipeline synchronously before the
-file is written, with a three-second timeout. LSP attachment and restarts do not
-add more save handlers.
+  ```gitconfig
+  [user]
+      name = Your Name
+      email = you@example.com
+  [credential "https://github.com"]
+      helper =
+      helper = !/opt/homebrew/bin/gh auth git-credential
+  [credential "https://gist.github.com"]
+      helper =
+      helper = !/opt/homebrew/bin/gh auth git-credential
+  ```
 
-| Filetype | Pipeline |
+  Use the absolute path from `command -v gh`; Homebrew runs Git with a reduced
+  `PATH`. Never use `git config --global` or `gh auth setup-git`: `~/.gitconfig` is
+  a Stow link, so they write into the repository. Use
+  `git config --file ~/.gitconfig.local` instead.
+- `~/.secrets.env`: environment secrets, sourced by the shell. Keep it at mode `600`.
+
+## 4. macOS preferences
+
+Review and run `./defaults.sh` (keyboard repeat, Dock, Finder, screenshots, and more).
+
+# Shell
+
+- **Pickers:** `Ctrl+T` files (bat preview), `Ctrl+R` history, `Alt+C` directories
+  (eza preview), and fzf-tab for completion. Inside tmux they open as 80% × 60% popups.
+- **Keys:** `Esc Esc` prefixes the line with sudo; `Esc .` inserts the last argument.
+- **Aliases:** eza for `ls`/`ll`/`tree`, `vim` → nvim, `gpm` (update main, then
+  return), plus Oh My Zsh git, kubectl, helm, and docker aliases.
+- `bat` picks `gruvbox-dark` or `gruvbox-light` from the terminal background.
+- Prompt settings live in `~/.p10k.zsh`. Anything that reads console input must go
+  above the instant-prompt block at the top of `.zshrc`.
+
+Keep `FZF_DEFAULT_OPTS` appearance-only: extrakto inherits it, so previews and
+borders belong in the widget-specific variables.
+
+# Terminal
+
+- **Ghostty:** `xterm-ghostty`; Shift+Enter sends a newline to CLI agents; padding
+  keeps status bars clear of the rounded window corners.
+- **tmux:** prefix is `` ` ``; `-` and `\` split; `Ctrl+h/j/k/l` moves across tmux panes
+  and Neovim splits; `prefix Tab` opens extrakto; in copy mode `o` opens the
+  selection and `Ctrl+o` opens it in Neovim. Requires 3.3+ for rounded popups and
+  3.7+ to follow light/dark (older versions stay dark). Uses `tmux-256color`.
+- **Remote hosts:** install the `xterm-ghostty` and `tmux-256color` terminfo entries
+  instead of overriding `TERM`.
+- **Yazi:** wider preview column (1:3:4), images up to 1600 px, wrapped text.
+  Images work inside tmux through passthrough.
+
+# Neovim
+
+Leader is Space. Requires Neovim 0.12+, plus Go, Node.js, `uv`, `tree-sitter-cli`,
+and a C compiler for Mason and treesitter. Restart Neovim after config changes.
+
+**Formatting.** conform formats on save (3 s timeout; failures don't block the
+write). `Space F` formats manually; `:ConformInfo` shows status.
+
+| Filetype | Formatter |
 | --- | --- |
 | Go | `goimports` → `gofumpt` |
-| Python | Ruff import organization → Ruff formatting |
-| Bash / sh | `shfmt` |
+| Python | Ruff organize imports → Ruff format |
+| sh / bash | `shfmt` |
 | Lua | StyLua |
-| YAML, including Compose, GitLab CI, and Helm values | Prettier |
-| JSON / JSONC | Prettier |
-| Markdown | Prettier, preserving hard line breaks |
+| YAML, JSON, Markdown | Prettier |
 | TOML | Taplo |
-| Other filetypes | Available LSP formatter → trailing-whitespace trimming |
+| Others | LSP formatter, then trim whitespace |
 
-The fallback covers Go module/workspace files through gopls. Without an LSP
-formatter, Zsh and Vimscript only have trailing whitespace removed; Bash's
-formatter is deliberately not applied to Zsh syntax. Formatters use their normal
-project configuration files, and Prettier prefers a project-local installation.
-Python import organization does not enable unrelated Ruff lint fixes.
+Zsh gets whitespace trimming only; `shfmt` doesn't understand Zsh.
 
-`Space F` formats the current buffer in normal mode, even without an attached
-LSP. `:ConformInfo` shows the selected formatters, availability, and error log.
+**Debugging.** [nvim-dap-go](https://github.com/leoluz/nvim-dap-go) and
+[nvim-dap-python](https://codeberg.org/mfussenegger/nvim-dap-python) supply the
+adapters and launch configurations.
 
-Mason Tool Installer installs missing `goimports`, `gofumpt`, `shfmt`, `stylua`,
-`prettier`, `taplo`, `delve`, and `debugpy` binaries on startup; Ruff is already
-provisioned by the LSP bridge. Allow installation to finish on a fresh machine, or run
-`:MasonToolsInstallSync` to wait explicitly. Existing tools are not automatically
-upgraded on each startup. Avoid `:MasonToolsClean`: this installer's list excludes
-the language servers managed by the mason-lspconfig bridge.
+- `Space t d` debugs the nearest test (Go and Python, through neotest) from any
+  starting directory. Python projects need a marker such as `pyproject.toml`.
+- `F5` lists the stock configurations, which assume Neovim was started at the
+  project root. For Go, pick **Debug Package**; **Debug** builds only the current
+  file.
+- Python code runs with the project's `.venv`/`venv`. The test runner (unittest or
+  pytest) is picked from the project's config.
 
-Restart Neovim after deploying configuration changes; sourcing the whole config
-into an existing process is not the reload path.
+Mason Tool Installer keeps the formatters, `delve`, and `debugpy` installed
+(`:MasonToolsInstallSync` waits for it). Avoid `:MasonToolsClean`: language servers
+are managed separately by mason-lspconfig.
 
-Formatting errors or timeouts are reported but do not block the write; inspect
-`:ConformInfo` if a file could not be formatted.
+**AI agents.** omp and Cursor Agent run through Sidekick in tmux sessions that
+outlive Neovim; toggling again reconnects.
 
-# Neovim debugging
-
-nvim-dap uses the standard language extensions instead of hand-written adapters:
-[nvim-dap-go](https://github.com/leoluz/nvim-dap-go) and
-[nvim-dap-python](https://codeberg.org/mfussenegger/nvim-dap-python). `F5` offers
-their stock configurations (for Go, pick **Debug Package**; **Debug** builds only the
-current file). `Space t d` debugs the nearest test through neotest (Go and Python)
-and works even when Neovim was started outside the project, as long as a Python
-project has a marker such as `pyproject.toml`. The stock `F5` configurations assume
-Neovim was started at the project root. dap-python runs the code with the project's
-`.venv`/`venv` and picks unittest or pytest from the project's config.
-
-# Neovim AI integration
-
-Neovim runs OMP and Cursor Agent through Sidekick in persistent tmux sessions.
-The leader key is Space:
-
-| Mapping | Action |
+| Keys | Action |
 | --- | --- |
-| `Space o o` | Toggle OMP and focus its terminal |
-| `Space o f` | Focus OMP without toggling it closed |
-| `Space o s` (visual mode) | Send the selection to OMP's draft without submitting |
-| `Space c c` | Toggle Cursor Agent |
-| `Space c s` (visual mode) | Send the selection specifically to Cursor Agent |
-| `Space a c` | Toggle Claude Code |
-| `Space a f` | Focus Claude Code |
-| `Space a s` (visual mode) | Send the selection to Claude Code |
+| `Space o o` / `Space o f` | Toggle / focus omp |
+| `Space o s` (visual) | Send selection to omp's draft |
+| `Space c c` / `Space c s` | Toggle Cursor Agent / send selection |
+| `Space a c` / `Space a f` | Toggle / focus Claude Code (needs the `claude` CLI) |
+| `Space a s` (visual) | Send selection to Claude Code |
 | `Space a a` / `Space a d` | Accept / deny a Claude Code diff |
-
-Closing Neovim leaves the CLI running in tmux; opening it again from the same
-project and toggling OMP reconnects to that session. Quit the CLI inside its
-terminal when you want to stop it. In OMP's terminal-input mode, `Ctrl+P` and
-`Ctrl+Q` pass through to OMP for model cycling and queued follow-ups rather than
-triggering Sidekick actions. `Ctrl+G` opens the prompt draft in `$VISUAL`/`$EDITOR`
-(Neovim in this setup).
-
-OMP returns LSP diagnostics after edits and allows delegated agents to use LSP.
-Automatic LSP formatting remains disabled.
-
-Project memory uses the `local` backend; `autolearn` enables lesson capture.
-OMP keeps each project's memory under `~/.omp/agent/memories/<encoded-project-path>/`
-(or its configured XDG state directory), outside the checkout. The repository's
-ignore rules also exclude OMP memory stores and runtime databases without ignoring
-ordinary `MEMORY.md` or `AGENTS.md` files. Use `/memory view` to inspect memory;
-session summaries are generated in the background from persisted, idle sessions.
-
-The Stow-managed OMP config routes work as follows:
-
-| Roles / agents | Model | Thinking |
-| --- | --- | --- |
-| `default` | GPT-6 Astra | auto |
-| `slow`, `plan` | GPT-6 Astra | max |
-| `vision` | GPT-6 Astra | high |
-| `task` role/agent, `scout` agent | Grok 4.7 | medium |
-| `smol`, `tiny`, `commit` roles, `sonic` agent | Grok 4.7 | low |
-| `advisor` role, `reviewer` and `security-reviewer` agents | Claude Opus 5 | high |
-| `judge` | TypeSafe JEV (`jev-latest`) | — |
-
-Both review agents reuse `@advisor`, but passive advice remains disabled by
-default. Use `/advisor on` or `/advisor off` to control it for the current session.
-Role-specific fallback chains use GPT-5.6 Sol through `openai-codex`, with
-automatic effort for the main session, max for planning, high for vision/review,
-medium for implementation, and low for lightweight roles. OMP returns to the
-primary model after its cooldown expires. Sol on the same Codex account may share
-GPT-6's quota limits.
-
-The main session uses `defaultThinkingLevel: auto`; its primary and fallback
-model selectors intentionally omit fixed effort suffixes. Other roles retain the
-explicit thinking levels above.
-
-Typed judgments try TypeSafe JEV first, then the configured `@tiny` role if JEV
-is unavailable, including when credentials are missing. Authenticate on each
-machine with `/login typesafe`; credentials stay outside these dotfiles. JEV
-handles `judge()` and internal typed decisions, not ordinary chat or the review
-agents. The retired `providers.judgmentProvider` setting is not used; routing is
-controlled by `modelRoles.judge` and `retry.fallbackChains.judge`.
-
-Start a new OMP process to load all settings after changing the config; toggling
-Sidekick only reconnects to an existing process.
-
-The optional Claude Code editor integration requires the official
-[Claude Code CLI](https://code.claude.com/docs/en/setup) and its own authentication;
-install it using the supported platform instructions before using those mappings.
-
-# Terminal appearance and pickers
-
-Ghostty and Neovim keep the standard Gruvbox light/dark canvas backgrounds. Both
-status bars use a continuous contrasting background: dark1 (`#3c3836`) in dark
-mode and light1 (`#ebdbb2`) in light mode.
-The tmux bar shows the session, windows, zoom state, and clock in filled powerline
-segments. Neovim's status line uses matching separators and mode-specific Gruvbox colors.
-Neovim keeps its command row below the status line so command entry remains
-visible above tmux.
-Ghostty keeps Berkeley Mono at 17 points, with 8-point horizontal padding,
-10-point vertical padding, 4% extra cell height, and font thickening disabled.
-Padding retains the canvas color and balances leftover cell space, keeping both
-status bars inset from the rounded macOS window corners. Padding geometry changes
-require a new Ghostty window or tab after reloading the config.
-
-Shell pickers use terminal-palette colors so they follow Ghostty's appearance:
-
-- `Ctrl+T`: files with a numbered, syntax-highlighted preview of the first 200 lines.
-- `Ctrl+R`: history, without a file preview.
-- `Alt+C`: directories with an `eza` contents preview.
-- Tab completion stays inline and adapts to the number of candidates.
-
-Shell widgets use centered 80% × 60% popups inside tmux and height-limited pickers
-outside it. Neovim's fzf-lua uses a rounded native float at the same proportions;
-extrakto uses tmux's rounded popup. Keep `FZF_DEFAULT_OPTS` appearance-only:
-extrakto inherits it, while preview commands and borders belong in widget-specific
-options. `fzf-tab` reserves two extra rows for its rounded border.
-
-To apply edits, reload Ghostty with `Cmd+Shift+,`, open a new shell, and restart
-Neovim. In an existing tmux session, reload with prefix then `r` (the prefix is
-backtick), then detach and reattach from the new shell to refresh the shared
-`FZF_DEFAULT_OPTS` environment.
 
 # Zed
 
-`zed/.config/zed/` tracks `settings.json`, `keymap.json`, and `debug.json`; the
-prompt-library database and `themes/` stay machine-local. The config mirrors the
-terminal setup: vim mode, Gruvbox following macOS appearance, Berkeley Mono 17 with
-the Hack fallback and Ghostty's line height, ligatures, format on save
-(goimports-style organize imports for Go, Ruff for Python), no inline edit
-predictions, and hidden chrome (no minimap, scrollbar, breadcrumbs, toolbar actions,
-or panel buttons). Yanks reach the macOS clipboard; deletes stay in vim registers.
-Inlay hints are on, and blame appears after the cursor rests on a line for 600 ms.
-Panels open from their key bindings or the command palette. Space-leader bindings
-follow Neovim: `space f f/g/b` files, grep, and open tabs; `space h p/s/r/b/d` hunk
-preview, stage, restore, blame, and diff; `]h`/`[h` hunks; `space g g` git panel;
-`space z` zen (centered layout, docks closed; Neovim uses the same key);
-`space t i` inlay hints; `vv`/`ss` splits; `;` command palette; `Ctrl+H/J/K/L`
-between panes and docks; `F2` project panel.
+Mirrors the Neovim setup: vim mode, Gruvbox Soft following macOS appearance, the
+same font, format on save, and hidden chrome. Space-leader keys match Neovim
+(`space f f/g/b`, `space h …` hunks, `space z` zen, `vv`/`ss` splits, `;` command
+palette, `Ctrl+h/j/k/l` between panes, `F2` project panel). Agents (omp, Claude,
+Cursor) connect over ACP; inline edit predictions are off. `debug.json` holds Go
+and Python scenarios (`F4` to pick one). Project-specific ones go in
+`<project>/.zed/debug.json`.
 
-Debugging uses Zed's defaults (`F4` pick a scenario, `F5` continue, `F9`/`space d b`
-breakpoint, `F10`/`F11`/`Shift+F11` step, `space d x` stop, `space d u` panel).
-`debug.json` holds global Go (Delve) and Python (debugpy) scenarios; Zed downloads
-its adapters on first use. Put project-specific tasks and scenarios in
-`<project>/.zed/tasks.json` and `.zed/debug.json`. Zed applies edits immediately.
+# omp
 
-# Yazi
+`omp/.config/omp/agent/config.yml` routes models by role:
 
-`yazi/.config/yazi/yazi.toml` only overrides defaults: columns at 1:3:4
-(parent, current, preview) so the preview gets half the width, image previews up to
-1600×1600 px, and wrapped text previews. Image previews inside tmux rely on
-`allow-passthrough on`, which `tmux.conf` sets.
+| Role | Model |
+| --- | --- |
+| `default` | GPT-6 Astra, auto thinking |
+| `slow`, `plan` / `vision` | GPT-6 Astra, max / high |
+| `task`, `scout` | Grok 4.7, medium |
+| `smol`, `tiny`, `commit`, `sonic` | Grok 4.7, low |
+| `advisor`, `reviewer`, `security-reviewer` | Claude Opus 5, high |
+| `judge` | TypeSafe JEV, then `@tiny` if unavailable |
 
-# Machine-specific Git identity
-
-Create or edit `~/.gitconfig.local` without overwriting existing machine settings:
-
-```gitconfig
-[user]
-    name = Your Name
-    email = you@example.com
-[credential "https://github.com"]
-    helper =
-    helper = !/absolute/path/to/gh auth git-credential
-[credential "https://gist.github.com"]
-    helper =
-    helper = !/absolute/path/to/gh auth git-credential
-```
-
-Replace `/absolute/path/to/gh` with `command -v gh` output. Homebrew runs Git with a
-sanitized `PATH`, so this helper must use an absolute path. Authenticate with `gh auth
-login` separately; credentials and local identity are not tracked here. Do not run
-`gh auth setup-git` or `git config --global`: `~/.gitconfig` is a Stow link, so they
-write into the tracked `git/.gitconfig`. Use `git config --file ~/.gitconfig.local`.
+Every role falls back to GPT-5.6 Sol at the same effort and returns to the primary
+model after cooldown. Memory is local, with autolearn on. LSP diagnostics are
+returned after edits. Run `/login typesafe` once per machine. Restart omp after
+config changes; toggling Sidekick only reconnects.
 
 # Maintenance
 
-- `uv-tools-upgrade` upgrades only tools installed with `uv tool`, not global pip
-  packages, project dependencies, or the Neovim host. Use `make python-host` for the host.
-- `topgrade` runs broad updates (packages, editor plugins, and more); review its scope
-  and `topgrade/.config/topgrade.toml` before running it. It is not the reproducible
-  plugin-restore path.
-- `make all` restows configs after repository changes; `make delete` unstows them.
-
-Optional Gemini CLI installations use the maintained npm package
-`@google/gemini-cli` (see [Google's installation instructions](https://geminicli.com/docs/get-started/installation/)):
-`npm install -g @google/gemini-cli`. This is separate from Homebrew Bundle and from
-`uv-tools-upgrade`; maintain it with npm without resetting existing authentication.
+- `topgrade` updates everything (review `topgrade.toml` first).
+- `uv-tools-upgrade` upgrades `uv tool` installs; `make python-host` upgrades
+  Neovim's pynvim.
+- Lazy's restore returns Neovim plugins to `lazy-lock.json`.
+- `make all` relinks after repository changes.
