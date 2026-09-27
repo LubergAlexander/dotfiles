@@ -9,7 +9,6 @@ npm
 neovim
 tree-sitter-cli
 shfmt
-python-black
 git-delta
 tealdeer
 glow
@@ -35,6 +34,7 @@ eza
 ripgrep
 jq
 jless
+yazi
 docker
 docker-compose
 kubectl
@@ -42,7 +42,6 @@ helm
 kubectx
 krew
 kind
-azure-cli
 pv
 syncthing
 nmap

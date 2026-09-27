@@ -1,2 +1,3 @@
 oh-my-pi-bin
 topgrade
+herdr-bin

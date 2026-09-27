@@ -68,15 +68,15 @@ uv tool install llm
 ```
 
 The package list targets official x86_64 Arch repositories, not Homebrew formula
-names or AUR packages. It includes `eza`, `kubectl`, `helm`, `kubectx`, `krew`,
-`kind`, `azure-cli`, and Docker tooling. `tealdeer` provides `tldr`; `procps-ng`
+names or AUR packages. It includes `eza`, `yazi`, `kubectl`, `helm`, `kubectx`, `krew`,
+`kind`, and Docker tooling. `tealdeer` provides `tldr`; `procps-ng`
 provides `watch`. `ghostty-terminfo` provides `xterm-ghostty`, and `ncurses` provides
 `tmux-256color`. `wl-clipboard` (Wayland), `xclip` (X11), and `xdg-utils` supply
 clipboard/opening backends. `ttf-hack-nerd` is the free font fallback. These names
 are listed in the [official Arch package database](https://archlinux.org/packages/).
 
-`arch_aur_pkglist.txt` lists [AUR packages](https://aur.archlinux.org/) (`oh-my-pi-bin`
-and `topgrade`); review their PKGBUILDs and install with your preferred AUR helper,
+`arch_aur_pkglist.txt` lists [AUR packages](https://aur.archlinux.org/) (`oh-my-pi-bin`,
+`topgrade`, and `herdr-bin`); review their PKGBUILDs and install with your preferred AUR helper,
 for example `yay -S --needed - < arch_aur_pkglist.txt`.
 Docker daemon setup, desktop sessions, and SSH-agent services
 are machine-specific; they are not enabled by Stow. The shell preserves an inherited
