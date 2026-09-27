@@ -4,8 +4,8 @@
 defaultThinkingLevel: auto
 modelRoles:
   default: anthropic/claude-opus-5-5          # ~Fable 5.1 quality at a third of the cost
-  slow: anthropic/claude-fable-5-1:high        # top coding-agent model for deep work
-  plan: anthropic/claude-fable-5-1:high
+  slow: openai-codex/gpt-6-astra:high          # deep work; Fable is metered (extra cost) on Claude Pro
+  plan: openai-codex/gpt-6-astra:high
   vision: anthropic/claude-opus-5-5:high
   task: openai-codex/gpt-6-sol                 # subagents on the Codex quota; effort by JEV
   smol: xai-oauth/grok-4.7:low                 # scout runs this at medium; strong agent loops
@@ -45,9 +45,9 @@ retry:
     default:
       - openai-codex/gpt-6-astra
     slow:
-      - openai-codex/gpt-6-astra:high
+      - anthropic/claude-opus-5-5:high
     plan:
-      - openai-codex/gpt-6-astra:high
+      - anthropic/claude-opus-5-5:high
     vision:
       - openai-codex/gpt-6-sol:high
     task:
@@ -59,7 +59,7 @@ retry:
     commit:
       - xai-oauth/grok-4.7:low
     advisor:
-      - anthropic/claude-fable-5-1:high
+      - anthropic/claude-opus-5-5:high
     judge:
       - typesafe/jev-preview
       - "@tiny"

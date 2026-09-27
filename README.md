@@ -192,15 +192,16 @@ ChatGPT (Codex), and Grok subscriptions:
 | Role | Model | Fallback |
 | --- | --- | --- |
 | `default` | Claude Opus 5.5, auto thinking | GPT-6 Astra |
-| `slow`, `plan` | Claude Fable 5.1, high | GPT-6 Astra, high |
+| `slow`, `plan` | GPT-6 Astra, high | Claude Opus 5.5, high |
 | `vision` | Claude Opus 5.5, high | GPT-6 Sol, high |
 | `task` (subagents) | GPT-6 Sol, auto thinking | Grok 4.7 |
 | `smol` (`scout` at medium) | Grok 4.7, low | GPT-6 Sol, low |
 | `tiny`, `commit`, `sonic` | GPT-6 Luna, low | Grok 4.7, low |
-| `advisor`, `reviewer`, `security-reviewer` | GPT-6 Astra, high | Claude Fable 5.1, high |
+| `advisor`, `reviewer`, `security-reviewer` | GPT-6 Astra, high | Claude Opus 5.5, high |
 | `judge` | TypeSafe JEV | JEV preview, then `@tiny` |
 
 Fallbacks switch provider, so one exhausted subscription doesn't stall a role.
+Claude Fable is left out: on Claude Pro it is billed as metered extra usage.
 JEV makes omp's small internal decisions: the effort level for `auto` roles,
 whether a stop was premature (`features.unexpectedStopDetection: smart`), judged
 rules, AI git staging, and the `find` tool, which is enabled only with JEV. Run
