@@ -634,23 +634,34 @@ require("lazy").setup({
                         }
                     end,
 
-                    -- Go (dlv): Mason's managed executable and dynamic port
+                    -- Go (dlv): Mason's managed executable and dynamic port.
+                    -- Delve runs `go build` in its own working directory (Neovim's cwd),
+                    -- not the launch `cwd`; point it at the program's module root.
                     delve = function(config)
-                        dap.adapters.go = config.adapters
+                        dap.adapters.go = vim.tbl_extend("force", config.adapters, {
+                            enrich_config = function(cfg, on_config)
+                                if not cfg.dlvCwd and cfg.program then
+                                    cfg = vim.deepcopy(cfg)
+                                    cfg.dlvCwd = vim.fs.root(cfg.program, "go.mod")
+                                end
+                                on_config(cfg)
+                            end,
+                        })
 
                         dap.configurations.go = {
                             {
                                 type = "go",
-                                name = "Debug Current File",
+                                name = "Debug Current Package",
                                 request = "launch",
-                                program = "${file}",
+                                -- The whole package: a lone file misses its siblings.
+                                program = "${fileDirname}",
                             },
                             {
                                 type = "go",
                                 name = "Debug Package (all tests)",
                                 request = "launch",
                                 mode = "test",
-                                program = "./${relativeFileDirname}",
+                                program = "${fileDirname}",
                             },
                         }
                     end,
