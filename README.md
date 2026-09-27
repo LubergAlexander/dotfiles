@@ -130,10 +130,9 @@ Neovim installs its plugins using the committed `lazy-lock.json`. Network access
 required. Use Lazy's restore operation to return to the committed plugin snapshot;
 updating plugins intentionally changes that snapshot.
 
-On an existing installation, refresh **only the aliases snippet** once after deployment
-from an initialized interactive Zsh: `zinit update "$HOME/.aliases.zsh"`. Then open
-a new shell so removed aliases disappear too. Local snippet loading/caching remains
-unchanged; do not refresh, move, or alter the untracked secrets file as part of setup.
+`~/.aliases.zsh` and the untracked `~/.secrets.env` are sourced in place, so edits
+take effect in the next shell without any `zinit update`. Keep `~/.secrets.env` at
+mode `600`.
 
 # Neovim formatting
 
@@ -187,6 +186,10 @@ The leader key is Space:
 | `Space o s` (visual mode) | Send the selection to OMP's draft without submitting |
 | `Space c c` | Toggle Cursor Agent |
 | `Space c s` (visual mode) | Send the selection specifically to Cursor Agent |
+| `Space a c` | Toggle Claude Code |
+| `Space a f` | Focus Claude Code |
+| `Space a s` (visual mode) | Send the selection to Claude Code |
+| `Space a a` / `Space a d` | Accept / deny a Claude Code diff |
 
 Closing Neovim leaves the CLI running in tmux; opening it again from the same
 project and toggling OMP reconnects to that session. Quit the CLI inside its
@@ -242,7 +245,6 @@ Sidekick only reconnects to an existing process.
 The optional Claude Code editor integration requires the official
 [Claude Code CLI](https://code.claude.com/docs/en/setup) and its own authentication;
 install it using the supported platform instructions before using those mappings.
-LM Studio is optional; its CLI path is included only when `$HOME/.lmstudio/bin` exists.
 
 # Terminal appearance and pickers
 
@@ -325,7 +327,9 @@ Create or edit `~/.gitconfig.local` without overwriting existing machine setting
 
 Replace `/absolute/path/to/gh` with `command -v gh` output. Homebrew runs Git with a
 sanitized `PATH`, so this helper must use an absolute path. Authenticate with `gh auth
-login` separately; credentials and local identity are not tracked here.
+login` separately; credentials and local identity are not tracked here. Do not run
+`gh auth setup-git` or `git config --global`: `~/.gitconfig` is a Stow link, so they
+write into the tracked `git/.gitconfig`. Use `git config --file ~/.gitconfig.local`.
 
 # Maintenance
 

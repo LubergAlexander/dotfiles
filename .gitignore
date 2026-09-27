@@ -1,11 +1,3 @@
-homebrew/.Brewfile.lock.json
-nvim/.config/nvim/undo
-nvim/.config/nvim/backup
-nvim/.config/nvim/repos
-nvim/.config/nvim/.cache
-nvim/.config/nvim/temp
-nvim/.config/nvim/repos
-tmux/.config/tmux/plugins
 *.bak
 .claude/
 
