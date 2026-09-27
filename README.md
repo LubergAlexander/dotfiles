@@ -33,6 +33,8 @@ xcode-select --install
 # Apple Silicon:
 eval "$(/opt/homebrew/bin/brew shellenv)"
 # Intel Macs use /usr/local/bin/brew instead.
+# Homebrew 7 refuses formulae from third-party taps until they are trusted.
+brew trust --tap can1357/tap teamookla/speedtest buo/cask-upgrade
 brew bundle --file=homebrew/.Brewfile
 
 # 3. Install the licensed font manually, then follow "Install the configs" below.
