@@ -35,6 +35,7 @@ brew "pv"
 brew "syncthing", restart_service: :changed
 brew "nmap"
 brew "mtr"
+brew "mas"
 tap "teamookla/speedtest", trusted: true
 brew "teamookla/speedtest/speedtest"
 tap "buo/cask-upgrade", trusted: true
@@ -77,3 +78,6 @@ cask "cursor-cli"
 cask "zed"
 cask "font-hack-nerd-font"
 cask "font-fira-code-nerd-font"
+
+# Mac App Store
+mas "WireGuard", id: 1451685025
