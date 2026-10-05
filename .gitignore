@@ -1,6 +1,9 @@
 *.bak
 .claude/
 
+# Neovim plugin revisions are machine-local and updated by Topgrade.
+/nvim/.config/nvim/lazy-lock.json
+
 # OMP memory stores, including repository-local agent directories.
 **/.omp/**/memories/
 **/.config/omp/**/memories/

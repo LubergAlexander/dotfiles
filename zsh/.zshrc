@@ -144,8 +144,8 @@ zinit wait'0' lucid for \
    zsh-users/zsh-autosuggestions \
    Aloxaf/fzf-tab
 
-# Basic OMZ libs
-zinit wait'0' lucid for \
+# Load basic OMZ libs before local aliases, so ls/ll cannot change after startup.
+zinit lucid for \
    OMZL::git.zsh \
    OMZL::history.zsh \
    OMZL::directories.zsh \
@@ -168,8 +168,7 @@ zinit wait'2' lucid for \
    OMZP::command-not-found \
    OMZP::colored-man-pages
 
-# Local files are sourced in place (not copied into zinit's snippet cache), after
-# the OMZ libs so their ls/ll aliases are overridden.
-zinit wait'2' lucid for \
-   atload'source ~/.aliases.zsh; [[ -r ~/.secrets.env ]] && source ~/.secrets.env' \
-   zdharma-continuum/null
+# Local aliases and environment must be ready before the first command.
+# Source in place rather than copying them into zinit's snippet cache.
+source ~/.aliases.zsh
+[[ -r ~/.secrets.env ]] && source ~/.secrets.env

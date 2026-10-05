@@ -9,7 +9,7 @@ the system light/dark setting across Ghostty, tmux, Neovim, Zed, fzf, bat, and o
 | --- | --- |
 | `zsh` | `.zshrc` (zinit, fzf, zoxide), `.aliases.zsh`, `.zinit-theme.zsh` (Gruvbox zinit colors), Powerlevel10k prompt |
 | `tmux` | `tmux.conf`, Gruvbox themes, copy-mode opener script |
-| `nvim` | single-file `init.lua` and `lazy-lock.json` |
+| `nvim` | single-file `init.lua`; machine-local, Git-ignored `lazy-lock.json` |
 | `ghostty` | terminal config and Gruvbox themes |
 | `zed` | settings, Neovim-style keymap, debug scenarios |
 | `git` | `.gitconfig` (delta, zdiff3); identity lives in `~/.gitconfig.local` |
@@ -68,8 +68,9 @@ make python-host    # create ~/.virtualenvs/neovim3 with pynvim for Neovim
 of the repository. `make delete` removes the links.
 
 On first start, zinit installs shell plugins, TPM installs tmux plugins, and Neovim
-installs plugins from `lazy-lock.json` plus Mason's servers, formatters, and
-debuggers. This needs network access.
+installs plugins plus Mason's servers, formatters, and debuggers. Lazy uses an
+existing local `lazy-lock.json` when present; no shared lockfile is committed.
+This needs network access.
 
 ## 3. Machine-local files
 
@@ -105,7 +106,9 @@ Review and run `./defaults.sh` (keyboard repeat, Dock, Finder, screenshots, and 
   (eza preview), and fzf-tab for completion. Inside tmux they open as 80% × 60% popups.
 - **Keys:** `Esc Esc` prefixes the line with sudo; `Esc .` inserts the last argument.
 - **Aliases:** eza for `ls`/`ll`/`tree`, `vim` → nvim, `gpm` (update main, then
-  return), plus Oh My Zsh git, kubectl, helm, and docker aliases.
+  return). Local aliases load before the first command, after the basic Oh My Zsh
+  libraries so `ls`/`ll` stay overridden. Tool plugins (git, kubectl, helm, docker)
+  still load asynchronously.
 - `bat` picks `gruvbox-dark` or `gruvbox-light` from the terminal background.
 - Prompt settings live in `~/.p10k.zsh`. Anything that reads console input must go
   above the instant-prompt block at the top of `.zshrc`.
@@ -213,5 +216,8 @@ omp after config changes; toggling Sidekick only reconnects.
 - `topgrade` updates everything (review `topgrade.toml` first).
 - `uv-tools-upgrade` upgrades `uv tool` installs; `make python-host` upgrades
   Neovim's pynvim.
-- Lazy's restore returns Neovim plugins to `lazy-lock.json`.
+- Topgrade updates Neovim plugins and the Git-ignored `lazy-lock.json`; machines
+  need not share plugin revisions. Lazy's restore uses the current local lockfile.
+  Before pulling the commit that untracks it on another machine, back up that
+  machine's lockfile if you want to retain its version record.
 - `make all` relinks after repository changes.
