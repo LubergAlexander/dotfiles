@@ -1,0 +1,38 @@
+onboarding = false
+
+[theme]
+name = "gruvbox"
+auto_switch = false
+
+[ui]
+status_indicators = "symbols"
+
+[ui.toast]
+delivery = "herdr"
+
+# Mirrors tmux/.config/tmux/tmux.conf: tmux session = workspace, window = tab.
+# Herdr defaults already match tmux for c, n, p, 1..9, x, z, [ and ?.
+# Ctrl+h/j/k/l stays with Neovim: herdr has no vim-tmux-navigator equivalent,
+# so pane focus uses prefix+h/j/k/l.
+[keys]
+prefix = "backtick"
+reload_config = "prefix+r"
+resize_mode = "prefix+shift+r"
+clear_pane = "prefix+ctrl+l"
+split_horizontal = "prefix+minus"
+split_vertical = "prefix+backslash"
+next_tab = ["prefix+n", "prefix+space"]
+previous_tab = ["prefix+p", "prefix+backspace"]
+close_tab = "prefix+&"
+close_workspace = "prefix+shift+x"
+rename_tab = "prefix+comma"
+rename_workspace = "prefix+$"
+previous_workspace = "prefix+("
+next_workspace = "prefix+)"
+detach = "prefix+d"
+workspace_picker = "prefix+s"
+goto = "prefix+w"
+settings = "prefix+shift+s"
+cycle_pane_next = ["prefix+o", "prefix+tab"]
+open_notification_target = "prefix+shift+o"
+last_pane = "prefix+;"

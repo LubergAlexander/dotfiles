@@ -9,6 +9,7 @@ the system light/dark setting across Ghostty, tmux, Neovim, Zed, fzf, bat, and o
 | --- | --- |
 | `zsh` | `.zshrc` (zinit, fzf, zoxide), `.aliases.zsh`, `.zinit-theme.zsh` (Gruvbox zinit colors), Powerlevel10k prompt |
 | `tmux` | `tmux.conf`, Gruvbox themes, copy-mode opener script |
+| `herdr` | `config.toml` with tmux-style keybindings |
 | `nvim` | single-file `init.lua`; machine-local, Git-ignored `lazy-lock.json` |
 | `ghostty` | terminal config and Gruvbox themes |
 | `zed` | settings, Neovim-style keymap, debug scenarios |
@@ -124,6 +125,9 @@ borders belong in the widget-specific variables.
   and Neovim splits; `prefix Tab` opens extrakto; in copy mode `o` opens the
   selection and `Ctrl+o` opens it in Neovim. Requires 3.3+ for rounded popups and
   3.7+ to follow light/dark (older versions stay dark). Uses `tmux-256color`.
+- **herdr:** keys mirror tmux: prefix is `` ` `` (press it twice for a literal backtick);
+  `-`/`\` split; `Space`/`BSpace` cycle tabs; `d` detaches; `s`/`w` pick workspaces
+  and panes. Pane focus is `prefix h/j/k/l` because `Ctrl+h/j/k/l` stays with Neovim.
 - **Remote hosts:** install the `xterm-ghostty` and `tmux-256color` terminfo entries
   instead of overriding `TERM`.
 - **Yazi:** wider preview column (1:3:4), images up to 1600 px, wrapped text.
