@@ -62,7 +62,9 @@ brew "krew"
 brew "kind"
 brew "colima"
 brew "docker"
+brew "docker-buildx"
 brew "docker-compose"
+brew "docker-credential-helper"
 
 # Desktop Applications
 cask "ghostty@tip"
