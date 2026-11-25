@@ -17,3 +17,6 @@ omp/.config/omp/**
 !omp/.config/omp/agent/
 !omp/.config/omp/agent/config.yml
 !omp/.config/omp/agent/lsp.yml
+
+# tpm-managed tmux plugins are machine-local.
+/tmux/.config/tmux/plugins/
